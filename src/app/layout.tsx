@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const inter = Inter({
@@ -14,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} antialiased`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster richColors theme="dark" />
+      </body>
     </html>
   )
 }

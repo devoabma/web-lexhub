@@ -5,7 +5,7 @@ import LogoOAB from '@/assets/logo-oabma.png'
 import { Scale } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'OAB Atende | Sistema de Gestão de Atendimentos',
+  title: 'Login | OAB Atende',
   description: '📚 Sistema de Gestão de Atendimentos da OAB Maranhão',
 }
 

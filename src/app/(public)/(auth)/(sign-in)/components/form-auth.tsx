@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader, LogIn } from 'lucide-react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const LoginFormSchema = z.object({
@@ -33,6 +34,8 @@ export function FormAuth() {
       console.log({
         data,
       })
+
+      toast.success('Logado com sucesso!')
     } catch (err) {
       console.log(err)
     }
