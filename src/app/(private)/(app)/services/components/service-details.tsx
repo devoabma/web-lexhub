@@ -120,8 +120,8 @@ export function ServiceDetails() {
         {/* Seção do Advogado */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <User className="size-4\" />
-            <span>Advogado</span>
+            <User className="size-4" />
+            <span>Advogado(a)</span>
           </div>
           <div className="flex items-center gap-4 pl-6">
             <Avatar className="size-12 border">
@@ -151,7 +151,7 @@ export function ServiceDetails() {
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <UserCog className="size-4" />
-            <span>Funcionário</span>
+            <span>Funcionário(a)</span>
           </div>
           <div className="flex items-center gap-4 pl-6">
             <Avatar className="size-12 border">

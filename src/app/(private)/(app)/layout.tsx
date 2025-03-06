@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { SidebarMenu } from './dashboard/components/sidebar-menu'
+import { SidebarMenu } from './dashboard/components/sidebar/sidebar-menu'
 
 export const metadata: Metadata = {
   title: 'Home | OAB Atende',
