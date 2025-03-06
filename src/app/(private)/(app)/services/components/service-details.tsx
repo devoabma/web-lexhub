@@ -27,7 +27,7 @@ const service = {
   id: '3b791653-6b9a-4d4c-ac25-0c5c458d0216',
   assistance: 'PERSONALLY',
   observation: 'Observação do atendimento',
-  status: 'OPEN',
+  status: 'COMPLETED',
   createdAt: new Date('2025-02-23T19:40:53.425Z'),
   finishedAt: new Date('2025-02-23T22:46:33.082Z') || null,
   lawyer: {
@@ -83,7 +83,7 @@ export function ServiceDetails() {
             variant={service.status === 'COMPLETED' ? 'closed' : 'open'}
             className="ml-2 rounded-full"
           >
-            {service.status === 'COMPLETED' ? 'Concluído' : 'Em andamento'}
+            {service.status === 'COMPLETED' ? 'Finalizado' : 'Em andamento'}
           </Badge>
         </div>
         <DialogDescription className="font-mono tracking-tight">
@@ -120,11 +120,11 @@ export function ServiceDetails() {
         {/* Seção do Advogado */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <User className="h-4 w-4" />
+            <User className="size-4\" />
             <span>Advogado</span>
           </div>
           <div className="flex items-center gap-4 pl-6">
-            <Avatar className="h-12 w-12 border">
+            <Avatar className="size-12 border">
               <AvatarFallback>
                 {service.lawyer.name
                   .split(' ')
@@ -150,11 +150,11 @@ export function ServiceDetails() {
         {/* Seção do Funcionário */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <UserCog className="h-4 w-4" />
+            <UserCog className="size-4" />
             <span>Funcionário</span>
           </div>
           <div className="flex items-center gap-4 pl-6">
-            <Avatar className="h-12 w-12 border">
+            <Avatar className="size-12 border">
               <AvatarFallback>
                 {service.agent.name
                   .split(' ')
@@ -167,9 +167,7 @@ export function ServiceDetails() {
               <p className="font-medium">{service.agent.name}</p>
               <p className="text-sm text-muted-foreground">
                 Função:{' '}
-                {service.agent.role === 'ADMIN'
-                  ? 'Administrador'
-                  : 'Funcionário'}
+                {service.agent.role === 'ADMIN' ? 'Administrador' : 'Membro'}
               </p>
               <p className="text-sm text-muted-foreground">
                 {service.agent.email}
@@ -183,10 +181,10 @@ export function ServiceDetails() {
         {/* Seção da Observação */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <FileText className="h-4 w-4" />
+            <FileText className="size-4" />
             <span>Observação</span>
           </div>
-          <div className="pl-6 bg-muted/50 p-3 rounded-md">
+          <div className="pl-6 bg-muted/50 p-3 rounded">
             <p className="text-sm">
               {service.observation === ''
                 ? 'Nenhuma observação informada.'
