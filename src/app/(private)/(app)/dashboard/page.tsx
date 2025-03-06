@@ -15,16 +15,12 @@ export default function DashboardPage() {
       <Separator orientation="horizontal" />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Card 1: Total de Atendimentos */}
         <TotalServicesCard />
 
-        {/* Card 2: Atendimentos por Ano */}
         <AnnualServicesCard />
 
-        {/* Card 3: Atendimentos por Mês */}
         <MonthlyServicesCard />
 
-        {/* Card 4: Atendimentos por Funcionário */}
         <EmployeeServicesCard />
       </div>
 

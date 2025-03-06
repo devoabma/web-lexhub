@@ -34,7 +34,7 @@ const servicesInMonth = [
 
 export function ServiceChart() {
   return (
-    <Card className="col-span-6">
+    <Card className="col-span-9 rounded-2xl">
       <CardHeader className="flex-row items-center justify-between pb-8">
         <div className="space-y-1">
           <CardTitle className="text-base font-medium">
