@@ -18,8 +18,9 @@ export function Profile() {
         type="button"
         variant="ghost"
         className="ml-auto rounded cursor-pointer"
+        title="Sair"
       >
-        <LogOut className="size-5 text-rose-800" />
+        <LogOut className="size-5 text-muted-foreground" />
       </Button>
     </div>
   )
