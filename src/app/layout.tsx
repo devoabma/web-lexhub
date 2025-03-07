@@ -1,3 +1,4 @@
+import { ClientProvider } from '@/components/app/client-provider'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import './globals.css'
@@ -16,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} antialiased`}>
       <body>
-        {children}
+        <ClientProvider>{children}</ClientProvider>
         <Toaster richColors theme="dark" />
       </body>
     </html>

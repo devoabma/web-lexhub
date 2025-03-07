@@ -1,5 +1,6 @@
 'use client'
 
+import { singIn } from '@/api/agents/sign-in'
 import { MessageFieldError } from '@/components/app/message-field-error'
 import { PasswordInput } from '@/components/app/password-input'
 import { Button } from '@/components/ui/button'
@@ -7,8 +8,10 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { Loader, LogIn } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -21,23 +24,44 @@ const LoginFormSchema = z.object({
 type LoginFormType = z.infer<typeof LoginFormSchema>
 
 export function FormAuth() {
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isSubmitting, errors },
   } = useForm<LoginFormType>({
     resolver: zodResolver(LoginFormSchema),
   })
 
+  // FIXME: Mutation que realiza o login do usuário
+  const { mutateAsync: authenticate } = useMutation({
+    mutationFn: singIn,
+  })
+
   async function handleLogin(data: LoginFormType) {
     try {
-      console.log({
-        data,
+      await authenticate({
+        email: data.email,
+        password: data.password,
       })
 
-      toast.success('Logado com sucesso!')
+      toast.success('Acesso concedido.', {
+        description: 'Bem-vindo(a) à OAB Atende.',
+      })
+
+      reset()
+
+      router.push('/dashboard')
     } catch (err) {
       console.log(err)
+
+      reset()
+
+      toast.error('Acesso negado.', {
+        description: 'Verifique suas credenciais e tente novamente.',
+      })
     }
   }
 

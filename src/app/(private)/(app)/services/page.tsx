@@ -1,6 +1,7 @@
 import { Pagination } from '@/components/app/pagination'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Sheet, SheetTrigger } from '@/components/ui/sheet'
 import {
   Table,
   TableBody,
@@ -10,6 +11,7 @@ import {
 } from '@/components/ui/table'
 import { CirclePlus } from 'lucide-react'
 import type { Metadata } from 'next'
+import { NewService } from './components/new-service'
 import { ServiceTableFilters } from './components/service-table-filters'
 import { ServiceTableRow } from './components/service-table-row'
 
@@ -25,10 +27,17 @@ export default function ServicesPage() {
           Central de Atendimentos
         </h1>
 
-        <Button className="bg-sky-700 flex items-center cursor-pointer rounded text-white hover:bg-sky-600">
-          <CirclePlus className="size-5" />
-          Novo Atendimento
-        </Button>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button className="bg-sky-700 flex items-center cursor-pointer rounded text-white hover:bg-sky-600">
+              <CirclePlus className="size-5" />
+              Novo Atendimento
+            </Button>
+          </SheetTrigger>
+
+          {/* FIXME: Componente de Novo Atendimento */}
+          <NewService />
+        </Sheet>
       </div>
 
       <Separator orientation="horizontal" />

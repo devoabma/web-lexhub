@@ -11,7 +11,7 @@ import { Profile } from './profile'
 export function SidebarMenu() {
   return (
     <aside className="bg-muted-foreground/5 flex items-center flex-col gap-6 border-r px-5 py-8">
-      <Image src={LogoOAB} alt="OAB Atende" width={170} height={28} />
+      <Image src={LogoOAB} alt="OAB Atende" width={170} height={28} priority />
 
       <Separator orientation="horizontal" />
 
