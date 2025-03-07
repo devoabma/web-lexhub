@@ -26,7 +26,7 @@ export default function AuthLayout({
             priority
           />
 
-          <h1 className="font-calsans flex  gap-2 justify-center text-base font-semibold md:text-lg lg:text-3xl">
+          <h1 className="flex font-calsans gap-2 justify-center text-base font-semibold md:text-lg lg:text-3xl">
             <Scale className="size-7" /> OAB Atende
           </h1>
         </div>
@@ -38,7 +38,7 @@ export default function AuthLayout({
       </div>
 
       <div className="relative order-1 flex flex-col items-center justify-center md:order-2">
-        {children}
+        <div className="animate-slide-up">{children}</div>
       </div>
     </div>
   )
