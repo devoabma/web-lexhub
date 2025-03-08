@@ -1,6 +1,6 @@
 'use client'
 
-import { CreateAgent } from '@/api/agents/create'
+import { createAgent } from '@/api/agents/create'
 import { PasswordInput } from '@/components/app/password-input'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,7 +25,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { CirclePlus, LoaderCircle, UserRoundPlus } from 'lucide-react'
 import { useState } from 'react'
@@ -56,14 +56,17 @@ export function NewAgent() {
   })
 
   // FIXME: Mutation para criar um novo funcionário
-  const { mutateAsync: createAgent, isPending: isCreating } = useMutation({
-    mutationFn: CreateAgent,
-    onSuccess: () => {},
+  const queryClient = useQueryClient()
+  const { mutateAsync: createAgentFn, isPending: isCreating } = useMutation({
+    mutationFn: createAgent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] })
+    },
   })
 
   async function handleNewAgent(data: NewAgentFormType) {
     try {
-      await createAgent({
+      await createAgentFn({
         name: data.name,
         email: data.email,
         password: data.password,

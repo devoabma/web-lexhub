@@ -3,8 +3,9 @@
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
-import { Ban, Edit } from 'lucide-react'
+import { Ban, Edit, LockOpen } from 'lucide-react'
 import { useState } from 'react'
+import { InactiveAgent } from './inactive-agent'
 import { UpdateAgentDialog } from './update-agent-dialog'
 
 interface AgentTableRowProps {
@@ -13,13 +14,15 @@ interface AgentTableRowProps {
     name: string
     email: string
     role: 'ADMIN' | 'MEMBER'
-    inactivedAt?: string | null
+    inactive: string | null
   }
 }
 
 export function AgentTableRow({ agents }: AgentTableRowProps) {
+  console.log(agents.inactive)
   // FIXME: Controla se o dialog esta aberto ou nao
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isInactiveDialogOpen, isSetInactiveDialogOpen] = useState(false)
 
   return (
     <TableRow className="overflow-x-auto">
@@ -36,7 +39,7 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
       </TableCell>
 
       <TableCell className="font-medium truncate max-w-xs border-r">
-        {agents.inactivedAt ? 'Sim' : 'Não'}
+        {agents.inactive ? 'Sim' : 'Nao'}
       </TableCell>
 
       <TableCell>
@@ -58,14 +61,36 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
       </TableCell>
 
       <TableCell>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="rounded flex items-center cursor-pointer"
+        <Dialog
+          open={isInactiveDialogOpen}
+          onOpenChange={isSetInactiveDialogOpen}
         >
-          <Ban className="size-3 text-amber-600" />
-          Inativar
-        </Button>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded flex items-center cursor-pointer"
+            >
+              {agents.inactive ? (
+                <>
+                  <LockOpen className="size-3 text-green-600" />
+                  Permitir acesso
+                </>
+              ) : (
+                <>
+                  <Ban className="size-3 text-amber-600" />
+                  Revogar acesso
+                </>
+              )}
+            </Button>
+          </DialogTrigger>
+
+          {/* FIXME: Componente que desativa o funcionario */}
+          <InactiveAgent
+            agents={agents}
+            onOpenChange={isSetInactiveDialogOpen}
+          />
+        </Dialog>
       </TableCell>
     </TableRow>
   )

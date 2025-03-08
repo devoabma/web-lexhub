@@ -6,7 +6,7 @@ interface GetAllProps {
     name: string
     email: string
     role: 'ADMIN' | 'MEMBER'
-    inactivedAt: string | null
+    inactive: string | null
   }[]
 }
 

@@ -6,7 +6,7 @@ interface CreateAgentProps {
   password: string
 }
 
-export async function CreateAgent({ name, email, password }: CreateAgentProps) {
+export async function createAgent({ name, email, password }: CreateAgentProps) {
   await API.post('/agents', {
     name,
     email,

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
 import { Loader, LogIn } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -55,13 +56,22 @@ export function FormAuth() {
 
       router.push('/dashboard')
     } catch (err) {
-      console.log(err)
-
+      // FIXME: Tratar erros vindo da API
       reset()
 
-      toast.error('Acesso negado.', {
-        description: 'Verifique suas credenciais e tente novamente.',
+      if (isAxiosError(err)) {
+        toast.error('Acesso negado!', {
+          description: err.response?.data.message,
+        })
+
+        return
+      }
+
+      toast.error('Acesso negado!', {
+        description: 'Por favor, tente novamente.',
       })
+
+      console.log(err)
     }
   }
 
