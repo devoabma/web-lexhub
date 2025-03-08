@@ -26,6 +26,7 @@ export function Profile() {
   const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile,
+    staleTime: Number.POSITIVE_INFINITY,
   })
 
   // FIXME: Mutation para se deslogar

@@ -18,6 +18,7 @@ export function AgentsList() {
   const { data: results } = useQuery({
     queryKey: ['agents'],
     queryFn: getAll,
+    staleTime: Number.POSITIVE_INFINITY,
   })
 
   return (

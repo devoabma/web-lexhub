@@ -29,7 +29,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { DialogTitle } from '@radix-ui/react-dialog'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { LoaderCircle, Save } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -66,9 +66,13 @@ export function UpdateAgentDialog({ agents, onOpenChange }: UpdateAgentProps) {
     },
   })
 
+  const queryClient = useQueryClient()
   const { mutateAsync: updateAgentFn, isPending: isLoadindUpdate } =
     useMutation({
       mutationFn: updateAgent,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['agents'] })
+      },
     })
 
   async function handleUpdateAgent(data: UpdateAgentFormType) {
