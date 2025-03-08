@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useMutation } from '@tanstack/react-query'
-import { LogOut } from 'lucide-react'
+import { LoaderCircle, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -74,19 +74,27 @@ export function Profile() {
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" className="rounded cursor-pointer">
+              <Button variant="ghost" className="rounded cursor-pointer">
                 Cancelar
               </Button>
             </DialogClose>
             <Button
-              type="button"
               variant="destructive"
               className="rounded cursor-pointer"
               disabled={isLoggingOut}
               onClick={handleLogout}
             >
-              <LogOut className="size-4" />
-              Sair
+              {!isLoggingOut ? (
+                <>
+                  <LogOut className="size-4" />
+                  Sair da Conta
+                </>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <LoaderCircle className="size-4 animate-spin" />
+                  Saindo...
+                </div>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

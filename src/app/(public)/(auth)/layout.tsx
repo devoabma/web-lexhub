@@ -31,10 +31,15 @@ export default function AuthLayout({
           </h1>
         </div>
 
-        <footer className="text-sm">
-          &copy; {new Date().getFullYear()} - Gerência de Tecnologia da
-          Informação
-        </footer>
+        <div>
+          <footer className="text-sm">
+            &copy; {new Date().getFullYear()} - Gerência de Tecnologia da
+            Informação
+          </footer>
+          <span className="block text-sm text-muted-foreground">
+            Todos os direitos reservados
+          </span>
+        </div>
       </div>
 
       <div className="relative order-1 flex flex-col items-center justify-center md:order-2">
