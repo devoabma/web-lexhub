@@ -8,14 +8,14 @@ import { ServiceDetails } from './service-details'
 
 export function ServiceTableRow() {
   return (
-    <TableRow>
-      <TableCell>
+    <TableRow className="overflow-x-auto">
+      <TableCell className="w-full border-r sm:w-auto">
         <Dialog>
           <DialogTrigger asChild>
             <Button
               variant="outline"
               size="sm"
-              className="rounded cursor-pointer"
+              className="rounded cursor-pointer "
             >
               <Eye className="size-3" />
               <span className="sr-only">Detalhes do atendimento</span>
@@ -27,26 +27,30 @@ export function ServiceTableRow() {
         </Dialog>
       </TableCell>
 
-      <TableCell>
+      <TableCell className="border-r">
         <div className="flex items-center gap-2">
           <span className="block h-2 w-2 rounded-full bg-emerald-500" />
           <span className="text-xs font-medium">Em andamento</span>
         </div>
       </TableCell>
 
-      <TableCell className="text-muted-foreground">há 5 minutos</TableCell>
+      <TableCell className="text-muted-foreground border-r">
+        há 5 minutos
+      </TableCell>
 
-      <TableCell className="font-mono text-xs font-medium">
+      <TableCell className="font-mono text-xs font-medium border-r">
         PRESENCIAL
       </TableCell>
 
-      <TableCell className="font-mono text-xs font-medium">22158</TableCell>
+      <TableCell className="font-mono text-xs font-medium border-r">
+        22158
+      </TableCell>
 
-      <TableCell className="font-medium truncate max-w-xs">
+      <TableCell className="font-medium truncate max-w-xs border-r">
         Dalene Ferreira Melo dos Santos
       </TableCell>
 
-      <TableCell className="font-medium truncate max-w-xs">
+      <TableCell className="font-medium truncate max-w-xs border-r">
         Hilquias Ferreira Melo
       </TableCell>
 

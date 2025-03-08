@@ -14,7 +14,7 @@ interface SidebarMenuProps {
 
 export function SidebarMenu({ hasPrivilegedAccess }: SidebarMenuProps) {
   return (
-    <aside className="bg-muted-foreground/5 flex items-center flex-col gap-6 border-r px-5 py-8">
+    <aside className="bg-muted-foreground/5 flex items-center flex-col gap-6 border-r px-5 py-8 w-64">
       <Image src={LogoOAB} alt="OAB Atende" width={170} height={28} priority />
 
       <Separator orientation="horizontal" />
@@ -35,7 +35,7 @@ export function SidebarMenu({ hasPrivilegedAccess }: SidebarMenuProps) {
         )}
       </nav>
 
-      <div className="mt-auto flex flex-col gap-6">
+      <div className="mt-auto flex flex-col gap-6 w-full">
         <Separator orientation="horizontal" />
         <Profile />
       </div>
