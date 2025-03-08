@@ -45,7 +45,8 @@ export default function ServicesPage() {
       <div className="space-y-2.5 mt-4">
         {/* FIXME: Componente Service Table Filters */}
         <ServiceTableFilters />
-        <div className="border rounded">
+
+        <div className="border rounded mt-8">
           <Table>
             <TableHeader>
               <TableRow>

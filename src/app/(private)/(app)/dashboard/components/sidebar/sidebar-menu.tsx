@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 import LogoOAB from '@/assets/logo-oabma.png'
 import { Separator } from '@/components/ui/separator'
-import { HelpingHand, Monitor, SquarePlus, Users } from 'lucide-react'
+import { Bolt, ClipboardList, Monitor, Users } from 'lucide-react'
 import { NavItem } from './nav-item'
 import { Profile } from './profile'
 
@@ -21,13 +21,13 @@ export function SidebarMenu({ hasPrivilegedAccess }: SidebarMenuProps) {
 
       <nav className="space-y-0.5 w-full">
         <NavItem title="Dashboard" icon={Monitor} route="/dashboard" />
-        <NavItem title="Atendimentos" icon={HelpingHand} route="/services" />
+        <NavItem title="Atendimentos" icon={ClipboardList} route="/services" />
 
         {hasPrivilegedAccess && (
           <>
             <NavItem
-              title="Tipos de Serviços"
-              icon={SquarePlus}
+              title="Controle de Serviços"
+              icon={Bolt}
               route="/services-types"
             />
             <NavItem title="Funcionários" icon={Users} route="/agents" />

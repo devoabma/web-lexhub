@@ -1,3 +1,4 @@
+import { Separator } from '@/components/ui/separator'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -5,5 +6,13 @@ export const metadata: Metadata = {
 }
 
 export default function ServicesTypesPage() {
-  return <div>Services Types</div>
+  return (
+    <div className="flex flex-col gap-4">
+      <h1 className="text-3xl font-calsans font-bold tracking-tight">
+        Controle de Serviços
+      </h1>
+
+      <Separator orientation="horizontal" />
+    </div>
+  )
 }
