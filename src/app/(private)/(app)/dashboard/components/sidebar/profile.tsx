@@ -58,8 +58,8 @@ export function Profile() {
   }
 
   return (
-    <div className="flex items-center gap-3  max-w-[280px] overflow-hidden">
-      <div className="flex flex-col space-y-1  overflow-hidden">
+    <div className="flex items-center max-w-[280px] overflow-hidden">
+      <div className="flex flex-col space-y-1 overflow-hidden">
         <span className="font-medium truncate text-ellipsis whitespace-nowrap">
           {isProfileLoading ? (
             <Skeleton className="h-4 w-40" />
@@ -90,11 +90,11 @@ export function Profile() {
           ) : (
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               className="ml-auto rounded cursor-pointer flex-shrink-0"
               title="Sair"
             >
-              <LogOut className="size-5 text-muted-foreground" />
+              <LogOut className="size-4 text-red-500" />
             </Button>
           )}
         </DialogTrigger>
@@ -103,8 +103,7 @@ export function Profile() {
           <DialogHeader>
             <DialogTitle>Você realmente quer sair?</DialogTitle>
             <DialogDescription>
-              Ao fazer logout, você será desconectado da sua conta. Tem certeza
-              de que deseja continuar?
+              Ao fazer logout, você será desconectado da sua conta.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

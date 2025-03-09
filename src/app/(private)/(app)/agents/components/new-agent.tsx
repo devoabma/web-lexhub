@@ -202,7 +202,7 @@ export function NewAgent() {
               <SheetClose asChild>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   className="cursor-pointer rounded"
                 >
                   Cancelar
@@ -221,7 +221,7 @@ export function NewAgent() {
                 ) : (
                   <>
                     <UserRoundPlus className="size-4" />
-                    Criar Novo Funcionário
+                    Criar
                   </>
                 )}
               </Button>

@@ -32,8 +32,8 @@ export function AgentsList() {
             <TableRow>
               <TableHead>Nome do Funcionário</TableHead>
               <TableHead>E-mail cadastrado</TableHead>
-              <TableHead className="max-w-xs">Cargo</TableHead>
-              <TableHead className="max-w-xs">Inativo?</TableHead>
+              <TableHead className="max-w-xs text-center">Cargo</TableHead>
+              <TableHead className="w-52 text-center">Situação</TableHead>
               <TableHead className="w-28" />
               <TableHead className="w-28" />
             </TableRow>

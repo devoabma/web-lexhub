@@ -1,6 +1,6 @@
 'use client'
 
-import { inactiveAgent } from '@/api/agents/inactive'
+import { activeAgent } from '@/api/agents/active'
 import { Button } from '@/components/ui/button'
 import {
   DialogClose,
@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { LoaderCircle, Lock } from 'lucide-react'
+import { LoaderCircle, LockOpen } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface InactiveAgentProps {
@@ -21,30 +21,29 @@ interface InactiveAgentProps {
   onOpenChange: (open: boolean) => void
 }
 
-export function InactiveAgent({ agents, onOpenChange }: InactiveAgentProps) {
+export function ActiveAgent({ agents, onOpenChange }: InactiveAgentProps) {
   // FIXME: Mutation para se desativar o funcionário
   const queryClient = useQueryClient()
-  const { mutateAsync: inactiveAgentFn, isPending: isDesactivating } =
-    useMutation({
-      mutationFn: inactiveAgent,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['agents'] })
-      },
-    })
+  const { mutateAsync: activeAgentFn, isPending: isActivating } = useMutation({
+    mutationFn: activeAgent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agents'] })
+    },
+  })
 
-  async function handleInactiveAgent() {
+  async function handleActiveAgent() {
     try {
-      await inactiveAgentFn({
+      await activeAgentFn({
         id: agents.id,
       })
 
       onOpenChange(false)
 
-      toast.success('Desativação realizada com sucesso!', {
-        description: 'Você pode reativar o acesso quando quiser.',
+      toast.success('Ativação realizada com sucesso!', {
+        description: 'Você pode desativar o acesso quando quiser.',
       })
     } catch (err) {
-      toast.error('Erro na desativação!', {
+      toast.error('Erro na ativação!', {
         description: 'Por favor, tente novamente.',
       })
     }
@@ -53,9 +52,10 @@ export function InactiveAgent({ agents, onOpenChange }: InactiveAgentProps) {
   return (
     <DialogContent className="rounded-2xl">
       <DialogHeader>
-        <DialogTitle>Desativar Funcionário</DialogTitle>
+        <DialogTitle>Ativar Funcionário</DialogTitle>
         <DialogDescription>
-          Isso impedirá o acesso à plataforma. Tem certeza que deseja continuar?
+          Isso dará acesso de volta a plataforma. Tem certeza que deseja
+          continuar?
         </DialogDescription>
       </DialogHeader>
 
@@ -66,15 +66,14 @@ export function InactiveAgent({ agents, onOpenChange }: InactiveAgentProps) {
           </Button>
         </DialogClose>
         <Button
-          variant="destructive"
-          className="rounded cursor-pointer"
-          disabled={isDesactivating}
-          onClick={handleInactiveAgent}
+          className="rounded cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white"
+          disabled={isActivating}
+          onClick={handleActiveAgent}
         >
-          {!isDesactivating ? (
+          {!isActivating ? (
             <>
-              <Lock className="size-4" />
-              Revogar Acesso
+              <LockOpen className="size-4" />
+              Permitir Acesso
             </>
           ) : (
             <div className="flex items-center gap-2">

@@ -17,7 +17,7 @@ export default function AuthLayout({
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
       <div className="order-2 flex h-full flex-col justify-between border-t border-foreground/5 bg-muted p-10 text-muted-foreground md:order-1 md:border-r">
-        <div className="flex flex-col items-center space-y-4 text-lg text-foreground md:flex-row md:justify-between md:space-y-0">
+        <div className="flex flex-row justify-between items-center space-y-4 text-lg text-foreground md:text-2xl">
           <Image
             src={LogoOAB}
             alt="Logo da OAB Maranhão"
