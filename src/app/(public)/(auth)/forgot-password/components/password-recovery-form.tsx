@@ -1,6 +1,6 @@
 'use client'
 
-import { MessageFieldError } from '@/components/app/message-field-error'
+import { forgotPassword } from '@/api/agents/forgot-password'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -10,13 +10,22 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, ArrowRight, CheckCircle, Loader, Mail } from 'lucide-react'
+import { useMutation } from '@tanstack/react-query'
+import { ArrowLeft, ArrowRight, LoaderCircle, Mail } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const PasswordRecoverySchema = z.object({
@@ -26,64 +35,44 @@ const PasswordRecoverySchema = z.object({
 type PasswordRecoveryType = z.infer<typeof PasswordRecoverySchema>
 
 export function PasswordRecoveryForm() {
-  const router = useRouter() // 👈 Instancia o hook useRouter
-  const searchParams = useSearchParams()
+  const router = useRouter()
 
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting, errors, isSubmitted, isLoading },
-  } = useForm<PasswordRecoveryType>({
+  const form = useForm<PasswordRecoveryType>({
     resolver: zodResolver(PasswordRecoverySchema),
+    defaultValues: {
+      email: '',
+    },
   })
+
+  // FIXME: Mutation para enviar e-mail para redefinir
+  const { mutateAsync: forgotPasswordFn, isPending: isRecovering } =
+    useMutation({
+      mutationFn: forgotPassword,
+    })
 
   async function handlePasswordRecovery(data: PasswordRecoveryType) {
     try {
-      console.log({
-        data,
+      await forgotPasswordFn({
+        email: data.email,
       })
 
-      // Redireciona para a mesma página com o e-mail na URL
-      router.push(`?email=${encodeURIComponent(data.email)}`)
+      router.replace(
+        `/confirm-send-email/?email=${encodeURIComponent(data.email)}`
+      )
     } catch (err) {
+      // FIXME: Tratar erros vindo da API
+      form.reset()
+
+      toast.error('Não foi possível redefinir a senha. ', {
+        description: 'Por favor, tente novamente mais tarde.',
+      })
+
       console.log(err)
     }
   }
 
-  // Pega o e-mail da URL
-  const emailFromUrl = searchParams.get('email')
-
-  if (isSubmitted || emailFromUrl) {
-    return (
-      <Card className="w-full max-w-md shadow-lg border-0">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <CheckCircle className="h-12 w-12 text-green-500" />
-          </div>
-          <CardTitle className="text-2xl font-bold">E-mail enviado</CardTitle>
-          <CardDescription>
-            Enviamos instruções de recuperação para{' '}
-            <span className="font-bold">{emailFromUrl}</span>
-          </CardDescription>
-        </CardHeader>
-        <CardFooter className="flex items-center justify-center">
-          <Button
-            variant="link"
-            className="text-sm group  text-muted-foreground cursor-pointer"
-            asChild
-          >
-            <Link href="/">
-              <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
-              Voltar para o login
-            </Link>
-          </Button>
-        </CardFooter>
-      </Card>
-    )
-  }
-
   return (
-    <Card className="w-full max-w-md shadow-lg border-0">
+    <Card className="w-full max-w-md mx-auto rounded-2xl">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">
           Recuperação de senha
@@ -95,67 +84,77 @@ export function PasswordRecoveryForm() {
       </CardHeader>
 
       <CardContent>
-        <form
-          className="space-y-4"
-          onSubmit={handleSubmit(handlePasswordRecovery)}
-        >
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium">
-              Seu e-mail cadastrado
-            </Label>
-            <div className={`relative ${errors.email ? 'mb-6' : 'mb-2'}`}>
-              <div className="relative">
-                <Mail
-                  className={`absolute left-3 transition-transform duration-200 ${
-                    errors.email ? 'top-4.5' : 'top-1/2'
-                  } -translate-y-1/2 text-muted-foreground h-4 w-4`}
-                />
-                <Input
-                  id="email"
-                  data-error={Boolean(errors.email)}
-                  placeholder="jhon.doe@example.com"
-                  className="data-[error=true]:border-red-600 pl-10 rounded data-[error=true]:focus-visible:ring-0 transition-all duration-200"
-                  type="email"
-                  {...register('email')}
-                />
-              </div>
-              {errors.email && (
-                <MessageFieldError>{errors.email.message}</MessageFieldError>
-              )}
-            </div>
-          </div>
-
-          <Button
-            type="submit"
-            disabled={isSubmitting || Boolean(errors.email)}
-            className="w-full select-none group bg-sky-700 hover:bg-sky-600 hover:cursor-pointer rounded text-white font-semibold transition-colors"
+        <Form {...form}>
+          <form
+            className="space-y-4"
+            onSubmit={form.handleSubmit(handlePasswordRecovery)}
           >
-            {isSubmitting ? (
-              <>
-                Enviando solicitação <Loader className="size-5 animate-spin" />
-              </>
-            ) : (
-              <>
-                Redefinir senha
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
+            <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field, formState: { errors } }) => (
+                  <FormItem>
+                    <FormLabel>Seu e-mail cadastrado</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail
+                          className={`absolute left-3 transition-transform duration-200 ${
+                            errors.email ? 'top-4.5' : 'top-1/2'
+                          } -translate-y-1/2 text-muted-foreground h-4 w-4`}
+                        />
 
-      <CardFooter className="flex justify-center border-t pt-4">
-        <Button
-          variant="link"
-          className="text-sm group text-muted-foreground cursor-pointer"
-          asChild
-        >
-          <Link href="/">
-            <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
-            Voltar para o login
-          </Link>
-        </Button>
-      </CardFooter>
+                        <Input
+                          {...field}
+                          placeholder="jhon.doe@example.com"
+                          className="rounded pl-10"
+                        />
+                      </div>
+                    </FormControl>
+
+                    {errors.email && (
+                      <FormMessage className="text-red-500 text-xs">
+                        {errors.email.message}
+                      </FormMessage>
+                    )}
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isRecovering}
+              className="w-full select-none group bg-sky-700 hover:bg-sky-600 hover:cursor-pointer rounded text-white font-semibold transition-colors"
+            >
+              {isRecovering ? (
+                <>
+                  Enviando solicitação{' '}
+                  <LoaderCircle className="size-4 animate-spin" />
+                </>
+              ) : (
+                <>
+                  Redefinir senha
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
+            </Button>
+          </form>
+
+          <CardFooter className="flex justify-center border-t pt-4">
+            <Button
+              variant="link"
+              className="text-sm group text-muted-foreground cursor-pointer"
+              asChild
+            >
+              <Link href="/">
+                <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
+                Voltar para o login
+              </Link>
+            </Button>
+          </CardFooter>
+        </Form>
+      </CardContent>
     </Card>
   )
 }

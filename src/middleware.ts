@@ -1,7 +1,12 @@
 import { jwtDecode } from 'jwt-decode'
 import { type NextRequest, NextResponse } from 'next/server'
 
-const publicRoutes = [{ path: '/', whenAuthenticated: 'redirect' }] as const
+const publicRoutes = [
+  { path: '/', whenAuthenticated: 'redirect' },
+  { path: '/forgot-password', whenAuthenticated: 'redirect' },
+  { path: '/reset-password', whenAuthenticated: 'redirect' },
+  { path: '/confirm-send-email', whenAuthenticated: 'redirect' },
+] as const
 const adminRoutes = [
   { path: '/services-types', whenAuthenticated: 'redirect' },
   { path: '/agents', whenAuthenticated: 'redirect' },
@@ -71,8 +76,14 @@ export function middleware(request: NextRequest) {
 
     if (token.exp && token.exp * 1000 < Date.now()) {
       // Remove o cookie de autenticação se o token estiver expirado
-      const response = NextResponse.redirect(REDIRECT_WHEN_NOT_LOGGED_IN)
+      const redirectUrl = request.nextUrl.clone()
+
+      redirectUrl.pathname = REDIRECT_WHEN_NOT_LOGGED_IN
+
+      const response = NextResponse.redirect(redirectUrl)
+
       response.cookies.delete('@lexhub-auth')
+
       return response
     }
 

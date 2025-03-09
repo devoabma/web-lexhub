@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 
 import LogoOAB from '@/assets/logo-oabma.png'
-import { Scale } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Login | OAB Atende',
@@ -18,16 +18,18 @@ export default function AuthLayout({
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
       <div className="order-2 flex h-full flex-col justify-between border-t border-foreground/5 bg-muted p-10 text-muted-foreground md:order-1 md:border-r">
         <div className="flex flex-row justify-between items-center space-y-4 text-lg text-foreground md:text-2xl">
-          <Image
-            src={LogoOAB}
-            alt="Logo da OAB Maranhão"
-            width={180}
-            height={180}
-            priority
-          />
+          <Link href="/">
+            <Image
+              src={LogoOAB}
+              alt="Logo da OAB Maranhão"
+              width={180}
+              height={180}
+              priority
+            />
+          </Link>
 
-          <h1 className="flex font-calsans gap-2 justify-center text-base font-semibold md:text-lg lg:text-3xl">
-            <Scale className="size-7" /> OAB Atende
+          <h1 className="flex font-calsans gap-2 justify-center text-base font-semibold md:text-lg lg:text-4xl">
+            OAB Atende
           </h1>
         </div>
 

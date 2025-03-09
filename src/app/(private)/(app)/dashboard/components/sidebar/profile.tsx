@@ -86,7 +86,7 @@ export function Profile() {
       <Dialog>
         <DialogTrigger asChild>
           {isProfileLoading ? (
-            <Skeleton className="size-8 rounded" />
+            <Skeleton className="size-8 rounded ml-auto" />
           ) : (
             <Button
               type="button"
