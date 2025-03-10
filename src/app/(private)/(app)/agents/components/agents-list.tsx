@@ -12,14 +12,32 @@ import {
 import { useQuery } from '@tanstack/react-query'
 import { AgentTableFilters } from './agent-table-filters'
 import { AgentTableRow } from './agent-table-row'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { z } from 'zod'
 
 export function AgentsList() {
-  // FIXME: Query para pegar os funcionários
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const pageIndex = z.coerce.number().parse(searchParams.get('page') ?? '1')
+
+  // Query para pegar os funcionários
   const { data: results } = useQuery({
-    queryKey: ['agents'],
-    queryFn: getAll,
+    queryKey: ['agents', pageIndex],
+    queryFn: () => getAll({ pageIndex }),
     staleTime: Number.POSITIVE_INFINITY,
   })
+
+  function handlePageChange(pageIndex: number) {
+    // Atualiza os parâmetros da URL
+    const params = new URLSearchParams(searchParams.toString())
+
+    // Atualiza o parâmetro page
+    params.set('page', pageIndex.toString())
+
+    // Redireciona para a nova URL
+    router.push(`?${params.toString()}`)
+  }
 
   return (
     <>
@@ -49,7 +67,14 @@ export function AgentsList() {
       </div>
 
       {/* FIXME: Componente de Paginação */}
-      <Pagination pageIndex={0} totalCount={5} perPage={10} />
+      {results && (
+        <Pagination
+          onPageChange={handlePageChange}
+          pageIndex={pageIndex}
+          totalCount={results.total}
+          perPage={2}
+        />
+      )}
     </>
   )
 }

@@ -27,7 +27,7 @@ const service = {
   id: '3b791653-6b9a-4d4c-ac25-0c5c458d0216',
   assistance: 'PERSONALLY',
   observation: 'Observação do atendimento',
-  status: 'COMPLETED',
+  status: 'OPEN',
   createdAt: new Date('2025-02-23T19:40:53.425Z'),
   finishedAt: new Date('2025-02-23T22:46:33.082Z') || null,
   lawyer: {

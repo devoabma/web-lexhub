@@ -60,7 +60,7 @@ export function ServiceTableRow() {
           size="sm"
           className="rounded flex items-center cursor-pointer"
         >
-          <CheckCircle className="size-3 text-emerald-600" />
+          <CheckCircle className="size-3 text-yellow-600" />
           Concluir
         </Button>
       </TableCell>
