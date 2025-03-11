@@ -67,7 +67,7 @@ export function Profile() {
             profile?.agent.name
           )}
         </span>
-        <span className="text-xs font-medium">
+        <span className="font-medium text-xs">
           {isProfileLoading ? (
             <Skeleton className="h-3 w-32" />
           ) : (

@@ -2,6 +2,8 @@ import { API } from '@/lib/axios'
 
 interface GetAllQuery {
   pageIndex?: number | null
+  name?: string | null
+  role?: string | null
 }
 
 interface GetAllProps {
@@ -15,10 +17,12 @@ interface GetAllProps {
   total: number
 }
 
-export async function getAll({ pageIndex }: GetAllQuery) {
+export async function getAll({ pageIndex, name, role }: GetAllQuery) {
   const response = await API.get<GetAllProps>('/agents/all', {
     params: {
       pageIndex,
+      name,
+      role,
     } as GetAllQuery,
   })
 

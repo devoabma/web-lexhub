@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { ActiveAgent } from './active-agent'
 import { InactiveAgent } from './inactive-agent'
 import { UpdateAgentDialog } from './update-agent-dialog'
+import { Badge } from '@/components/ui/badge'
 
 interface AgentTableRowProps {
   agents: {
@@ -27,23 +28,28 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
   const [isInactiveDialogOpen, isSetInactiveDialogOpen] = useState(false)
   const [isActiveDialogOpen, isSetActiveDialogOpen] = useState(false)
 
-  const isAdmin = agents.role === 'ADMIN' && 'ADMINISTRADOR'
+  const isAdmin = agents.role === 'ADMIN'
 
   // Formata a data de inatividade se for válida
-  const inactiveDate = agents.inactive
-    ? (() => {
-        const data = parseISO(agents.inactive)
-        return isValid(data)
-          ? `Inativo há ${formatDistanceToNow(data, { locale: ptBR })}`
-          : 'ATIVO'
-      })()
-    : 'ATIVO'
-  // const inactiveDate = agents.inactive
-  //   ? (() => {
-  //       const data = parseISO(agents.inactive)
-  //       return isValid(data) && format(data, "'Inativado em' dd/MM/yyyy'")
-  //     })()
-  //   : 'ATIVO'
+  const inactiveDate = agents.inactive ? (
+    (() => {
+      const data = parseISO(agents.inactive)
+      return (
+        isValid(data) &&
+        `Inativo há ${formatDistanceToNow(data, { locale: ptBR })}`
+      )
+    })()
+  ) : (
+    <>
+      <Badge className="bg-emerald-700 text-white font-bold rounded-full gap-1.5 px-3 py-1">
+        <span className="relative flex size-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+          <span className="relative inline-flex rounded-full size-2 bg-white" />
+        </span>
+        ATIVO
+      </Badge>
+    </>
+  )
 
   return (
     <TableRow className="overflow-x-auto">
@@ -68,7 +74,15 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
           agents.inactive && 'opacity-40'
         }`}
       >
-        {isAdmin || 'MEMBRO'}
+        {isAdmin ? (
+          <Badge className="bg-indigo-900 rounded-full text-white font-bold gap-1.5 px-3 py-1">
+            ADMINISTRADOR
+          </Badge>
+        ) : (
+          <Badge className="bg-blue-700 rounded-full text-white font-bold gap-1.5 px-3 py-1">
+            MEMBRO
+          </Badge>
+        )}
       </TableCell>
 
       <TableCell
@@ -79,7 +93,7 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
         {inactiveDate}
       </TableCell>
 
-      <TableCell>
+      <TableCell className="flex items-center gap-2">
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
@@ -95,9 +109,7 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
 
           <UpdateAgentDialog agents={agents} onOpenChange={setIsDialogOpen} />
         </Dialog>
-      </TableCell>
 
-      <TableCell>
         {agents.inactive === null ? (
           <Dialog
             open={isInactiveDialogOpen}

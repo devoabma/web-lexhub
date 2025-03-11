@@ -21,21 +21,25 @@ export function AgentsList() {
 
   const pageIndex = z.coerce.number().parse(searchParams.get('page') ?? '1')
 
+  const name = searchParams.get('name')
+  const role = searchParams.get('role')
+
   // Query para pegar os funcionários
   const { data: results } = useQuery({
-    queryKey: ['agents', pageIndex],
-    queryFn: () => getAll({ pageIndex }),
+    queryKey: ['agents', pageIndex, name, role],
+    queryFn: () =>
+      getAll({ pageIndex, name, role: role === 'ALL' ? null : role }),
     staleTime: Number.POSITIVE_INFINITY,
   })
 
   function handlePageChange(pageIndex: number) {
-    // Atualiza os parâmetros da URL
+    // Cria uma instância de URLSearchParams baseada nos parâmetros de busca atuais
     const params = new URLSearchParams(searchParams.toString())
 
-    // Atualiza o parâmetro page
+    // Atualiza o parâmetro "page" com o novo índice da página
     params.set('page', pageIndex.toString())
 
-    // Redireciona para a nova URL
+    // Atualiza a URL no navegador sem recarregar a página
     router.push(`?${params.toString()}`)
   }
 
@@ -50,9 +54,8 @@ export function AgentsList() {
             <TableRow>
               <TableHead>Nome do Funcionário</TableHead>
               <TableHead>E-mail cadastrado</TableHead>
-              <TableHead className="max-w-xs text-center">Cargo</TableHead>
-              <TableHead className="w-52 text-center">Situação</TableHead>
-              <TableHead className="w-28" />
+              <TableHead className="w-52 text-center">Cargo</TableHead>
+              <TableHead className="w-56 text-center">Situação</TableHead>
               <TableHead className="w-28" />
             </TableRow>
           </TableHeader>
@@ -66,13 +69,14 @@ export function AgentsList() {
         </Table>
       </div>
 
+      {/* TODO: Observar isso depois em produção para ver se precisa ou nao */}
       {/* FIXME: Componente de Paginação */}
-      {results && (
+      {(results?.agents?.length ?? 0) > 10 && (
         <Pagination
           onPageChange={handlePageChange}
           pageIndex={pageIndex}
-          totalCount={results.total}
-          perPage={2}
+          totalCount={results?.total ?? 0}
+          perPage={10}
         />
       )}
     </>
