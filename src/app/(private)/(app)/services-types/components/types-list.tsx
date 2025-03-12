@@ -1,5 +1,6 @@
 'use client'
 
+import { getAll } from '@/api/services-types/get-all'
 import { CopyContentField } from '@/components/app/copy-content-field'
 import { Pagination } from '@/components/app/pagination'
 import { Button } from '@/components/ui/button'
@@ -12,12 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Edit } from 'lucide-react'
-import { TypesTableFilters } from './types-table-filters'
 import { useQuery } from '@tanstack/react-query'
-import { getAll } from '@/api/services-types/get-all'
+import { Edit } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
+import { TypesTableFilters } from './types-table-filters'
 
 export function ServicesTypesList() {
   const searchParams = useSearchParams()
@@ -25,9 +25,12 @@ export function ServicesTypesList() {
 
   const pageIndex = z.coerce.number().parse(searchParams.get('page') ?? '1')
 
+  const id = searchParams.get('id')
+  const name = searchParams.get('name')
+
   const { data: results } = useQuery({
-    queryKey: ['types', pageIndex],
-    queryFn: () => getAll({ pageIndex }),
+    queryKey: ['types', pageIndex, id, name],
+    queryFn: () => getAll({ pageIndex, id, name }),
     staleTime: Number.POSITIVE_INFINITY,
   })
 

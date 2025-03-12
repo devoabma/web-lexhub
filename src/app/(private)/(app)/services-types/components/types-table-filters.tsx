@@ -5,6 +5,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Search, X } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -16,6 +17,12 @@ const typesTableFiltersSchema = z.object({
 type TypesTableFiltersType = z.infer<typeof typesTableFiltersSchema>
 
 export function TypesTableFilters() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const id = searchParams.get('id')
+  const name = searchParams.get('name')
+
   const form = useForm<TypesTableFiltersType>({
     resolver: zodResolver(typesTableFiltersSchema),
     defaultValues: {
@@ -24,8 +31,32 @@ export function TypesTableFilters() {
     },
   })
 
-  function handleFilterTypeService(data: TypesTableFiltersType) {
-    console.log(data)
+  function handleFilterTypeService({ id, name }: TypesTableFiltersType) {
+    const url = new URLSearchParams(searchParams.toString())
+
+    if (id) url.set('id', id.toString())
+    else url.delete('id')
+
+    if (name) url.set('name', name.toString())
+    else url.delete('name')
+
+    // Reseta o parâmetro "page" para 1 quando os filtros mudam
+    url.set('page', '1')
+
+    // Atualiza a URL no navegador sem recarregar a página
+    router.push(`?${url.toString()}`)
+  }
+
+  function handleClearFilters() {
+    const url = new URLSearchParams()
+
+    // Reseta o parâmetro "page" para 1 quando os filtros mudam
+    url.set('page', '1')
+
+    // Atualiza a URL no navegador sem recarregar a página
+    router.push(`?${url.toString()}`)
+
+    form.reset()
   }
 
   return (
@@ -82,6 +113,7 @@ export function TypesTableFilters() {
           size="sm"
           variant="outline"
           className="cursor-pointer rounded"
+          onClick={handleClearFilters}
         >
           <X className="size-4" />
           Remover filtros
