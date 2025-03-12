@@ -13,17 +13,44 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Edit } from 'lucide-react'
+import { TypesTableFilters } from './types-table-filters'
+import { useQuery } from '@tanstack/react-query'
+import { getAll } from '@/api/services-types/get-all'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { z } from 'zod'
 
 export function ServicesTypesList() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const pageIndex = z.coerce.number().parse(searchParams.get('page') ?? '1')
+
+  const { data: results } = useQuery({
+    queryKey: ['types', pageIndex],
+    queryFn: () => getAll({ pageIndex }),
+    staleTime: Number.POSITIVE_INFINITY,
+  })
+
+  function handlePageChange(pageIndex: number) {
+    // Cria uma instância de URLSearchParams baseada nos parâmetros de busca atuais
+    const params = new URLSearchParams(searchParams.toString())
+
+    // Atualiza o parâmetro "page" com o novo índice da página
+    params.set('page', pageIndex.toString())
+
+    // Atualiza a URL no navegador sem recarregar a página
+    router.push(`?${params.toString()}`)
+  }
+
   return (
     <>
       {/* FIXME: Componente Types Services Table Filters */}
-      {/* Adicionar aqui */}
+      <TypesTableFilters />
 
       <div className="border rounded mt-8">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="overflow-x-auto">
               <TableHead className="w-28">Identificador</TableHead>
               <TableHead className="w-96">Nome do Serviço</TableHead>
               <TableHead className="w-28 text-center" />
@@ -31,43 +58,47 @@ export function ServicesTypesList() {
           </TableHeader>
 
           <TableBody>
-            <TableRow className="overflow-x-auto">
-              <TableCell className="relative font-mono text-xs font-medium border-r">
-                cm79suudv0001i3m0ekk2ed44
-                <CopyContentField value="cm79suudv0001i3m0ekk2ed44" />
-              </TableCell>
+            {results?.servicesTypes.map(serviceType => {
+              return (
+                <TableRow key={serviceType.id} className="overflow-x-auto">
+                  <TableCell className="relative font-mono text-xs font-medium border-r">
+                    {serviceType.id}
+                    <CopyContentField value={serviceType.id} />
+                  </TableCell>
 
-              <TableCell className="relative font-medium truncate max-w-xs border-r">
-                Instalação e configuração total para usar o GERID Inss Digital
-                <CopyContentField value="Instalação e configuração total para usar o GERID Inss Digital" />
-              </TableCell>
+                  <TableCell className="relative font-medium truncate max-w-xs border-r">
+                    {serviceType.name}
+                    <CopyContentField value={serviceType.name} />
+                  </TableCell>
 
-              <TableCell className="flex items-center justify-center">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded flex items-center w-full hover:border-emerald-500 transition-colors cursor-pointer disabled:cursor-not-allowed"
-                    >
-                      <Edit className="size-3.5 text-emerald-500" />
-                      Alterar
-                    </Button>
-                  </DialogTrigger>
+                  <TableCell className="flex items-center justify-center">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded flex items-center w-full hover:border-emerald-500 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                        >
+                          <Edit className="size-3.5 text-emerald-500" />
+                          Alterar
+                        </Button>
+                      </DialogTrigger>
 
-                  {/* TODO: Componente de Alterar Tipo */}
-                </Dialog>
-              </TableCell>
-            </TableRow>
+                      {/* TODO: Componente de Alterar Tipo */}
+                    </Dialog>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </div>
 
       {/* FIXME: Componente de Paginação */}
       <Pagination
-        onPageChange={() => {}}
-        pageIndex={1}
-        totalCount={10}
+        onPageChange={handlePageChange}
+        pageIndex={pageIndex}
+        totalCount={results?.total ?? 0}
         perPage={10}
       />
     </>

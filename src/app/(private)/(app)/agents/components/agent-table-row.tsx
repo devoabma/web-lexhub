@@ -53,6 +53,8 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
 
   return (
     <TableRow className="overflow-x-auto">
+      <TableCell />
+
       <TableCell
         className={`font-medium truncate max-w-xs border-r ${
           agents.inactive && 'opacity-40'
