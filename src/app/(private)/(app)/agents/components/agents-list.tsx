@@ -10,10 +10,10 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useQuery } from '@tanstack/react-query'
-import { AgentTableFilters } from './agent-table-filters'
-import { AgentTableRow } from './agent-table-row'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
+import { AgentTableFilters } from './agent-table-filters'
+import { AgentTableRow } from './agent-table-row'
 
 export function AgentsList() {
   const searchParams = useSearchParams()
@@ -56,7 +56,7 @@ export function AgentsList() {
               <TableHead>E-mail cadastrado</TableHead>
               <TableHead className="w-52 text-center">Cargo</TableHead>
               <TableHead className="w-56 text-center">Situação</TableHead>
-              <TableHead className="w-28" />
+              <TableHead className="w-32" />
             </TableRow>
           </TableHeader>
 
@@ -69,16 +69,13 @@ export function AgentsList() {
         </Table>
       </div>
 
-      {/* TODO: Observar isso depois em produção para ver se precisa ou nao */}
       {/* FIXME: Componente de Paginação */}
-      {(results?.agents?.length ?? 0) > 10 && (
-        <Pagination
-          onPageChange={handlePageChange}
-          pageIndex={pageIndex}
-          totalCount={results?.total ?? 0}
-          perPage={10}
-        />
-      )}
+      <Pagination
+        onPageChange={handlePageChange}
+        pageIndex={pageIndex}
+        totalCount={results?.total ?? 0}
+        perPage={10}
+      />
     </>
   )
 }

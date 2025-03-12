@@ -91,10 +91,10 @@ export function Profile() {
             <Button
               type="button"
               variant="outline"
-              className="ml-auto rounded cursor-pointer flex-shrink-0"
+              className="ml-auto rounded cursor-pointer text-xs text-muted-foreground hover:text-red-500 transition-colors flex-shrink-0"
               title="Sair"
             >
-              <LogOut className="size-4 text-red-500" />
+              <LogOut className="size-4" />
             </Button>
           )}
         </DialogTrigger>

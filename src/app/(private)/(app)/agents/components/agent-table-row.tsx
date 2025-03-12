@@ -1,16 +1,16 @@
 'use client'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { formatDistanceToNow, isValid, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Lock, LockOpen, Pencil } from 'lucide-react'
+import { Edit3, Lock, LockOpen } from 'lucide-react'
 import { useState } from 'react'
 import { ActiveAgent } from './active-agent'
 import { InactiveAgent } from './inactive-agent'
 import { UpdateAgentDialog } from './update-agent-dialog'
-import { Badge } from '@/components/ui/badge'
 
 interface AgentTableRowProps {
   agents: {
@@ -100,9 +100,9 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
               variant="outline"
               size="sm"
               disabled={agents.inactive !== null}
-              className="rounded flex items-center cursor-pointer disabled:cursor-not-allowed"
+              className="rounded flex items-center gap-2 cursor-pointer group hover:border-emerald-500 transition-colors disabled:cursor-not-allowed"
             >
-              <Pencil className="size-3 text-emerald-600" />
+              <Edit3 className="size-3.5 group-hover:text-emerald-500" />
               Alterar
             </Button>
           </DialogTrigger>
@@ -119,9 +119,9 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded flex items-center cursor-pointer"
+                className="rounded flex items-center gap-2 cursor-pointer"
               >
-                <Lock className="size-3 text-rose-600" />
+                <Lock className="size-3.5 text-rose-600" />
                 Revogar
               </Button>
             </DialogTrigger>
@@ -140,9 +140,9 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded flex items-center cursor-pointer"
+                className="rounded flex items-center gap-2 cursor-pointer"
               >
-                <LockOpen className="size-3 text-green-600" />
+                <LockOpen className="size-3.5 text-green-600" />
                 Permitir
               </Button>
             </DialogTrigger>
