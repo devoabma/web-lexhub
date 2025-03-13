@@ -216,6 +216,7 @@ export function UpdateAgentDialog({ agents, onOpenChange }: UpdateAgentProps) {
 
             <Button
               type="submit"
+              disabled={isLoadindUpdate}
               className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
             >
               {isLoadindUpdate ? (
