@@ -20,7 +20,7 @@ export async function getAll({ pageIndex, id, name }: GetAllQuery) {
       pageIndex,
       id,
       name,
-    } as GetAllQuery,
+    },
   })
 
   return response.data

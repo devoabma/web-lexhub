@@ -17,8 +17,6 @@ import { TypesTableFilters } from './types-table-filters'
 import { ServicesTypesTableRow } from './types-table-row'
 
 export function ServicesTypesList() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-
   const searchParams = useSearchParams()
   const router = useRouter()
 
