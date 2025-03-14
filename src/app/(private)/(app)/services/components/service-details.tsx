@@ -26,7 +26,8 @@ import {
 const service = {
   id: '3b791653-6b9a-4d4c-ac25-0c5c458d0216',
   assistance: 'PERSONALLY',
-  observation: 'Observação do atendimento',
+  observation:
+    'Observação do atendimento geral de teste da tela de detalhes de atendimento.',
   status: 'OPEN',
   createdAt: new Date('2025-02-23T19:40:53.425Z'),
   finishedAt: new Date('2025-02-23T22:46:33.082Z') || null,
@@ -73,7 +74,7 @@ export function ServiceDetails() {
   const durationText = `${hours}h ${minutes}min`
 
   return (
-    <DialogContent className="mx-auto w-[90%] rounded">
+    <DialogContent className="mx-auto sm:w-[90%] rounded">
       <DialogHeader className="mt-4">
         <div className="flex items-center justify-between">
           <DialogTitle className="text-xl font-calsans font-bold">

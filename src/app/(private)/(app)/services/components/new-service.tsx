@@ -2,6 +2,14 @@
 
 import { Button } from '@/components/ui/button'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
   Form,
   FormControl,
   FormDescription,
@@ -11,25 +19,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import {
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet'
-import { Textarea } from '@/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { MonitorCheck, SquarePen, UserRoundPlus } from 'lucide-react'
+import { CirclePlus, UserSearch } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -64,111 +56,127 @@ export function NewService() {
   }
 
   return (
-    <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto px-4">
-      <SheetHeader className="mt-4">
-        <SheetTitle className="font-calsans text-2xl">
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="bg-sky-700 flex items-center cursor-pointer rounded text-white hover:bg-sky-600">
+          <CirclePlus className="size-5" />
           Novo Atendimento
-        </SheetTitle>
-        <SheetDescription className="text-muted-foreground">
-          Preencha as informações para registrar um novo atendimento
-        </SheetDescription>
-      </SheetHeader>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md md:max-w-2xl overflow-y-auto px-4 rounded">
+        <DialogHeader className="mt-4">
+          <DialogTitle className="font-calsans text-2xl">
+            Novo Atendimento
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            Preencha as informações para registrar um novo atendimento
+          </DialogDescription>
+        </DialogHeader>
 
-      <Separator orientation="horizontal" />
+        <Separator orientation="horizontal" />
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleCreateNewService)}
-          className="space-y-6 pt-2"
-        >
-          <FormField
-            control={form.control}
-            name="oab"
-            render={({ field, formState: { errors } }) => (
-              <FormItem>
-                <FormLabel>Número de Inscrição OAB</FormLabel>
-                <FormControl>
-                  <Input {...field} className="rounded" />
-                </FormControl>
-
-                {errors.oab ? (
-                  <FormMessage className="text-red-500 text-xs">
-                    {errors.oab.message}
-                  </FormMessage>
-                ) : (
-                  <FormDescription className="text-muted-foreground text-xs">
-                    Por favor, insira o número da OAB válido.
-                  </FormDescription>
-                )}
-              </FormItem>
-            )}
-          />
-
-          <div className="w-full">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleCreateNewService)}
+            className="space-y-6 pt-2"
+          >
             <FormField
               control={form.control}
-              name="assistance"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Forma do Atendimento</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="rounded w-full">
-                        <SelectValue placeholder="Selecione a forma do atendimento" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="rounded">
-                      <SelectItem value="PERSONALLY">Presencial</SelectItem>
-                      <SelectItem value="REMOTELY">Remoto</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
+              name="oab"
+              render={({ field, formState: { errors } }) => (
+                <FormItem>
+                  <FormLabel>Número de Inscrição OAB</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="rounded" />
+                  </FormControl>
+
+                  {errors.oab ? (
+                    <FormMessage className="text-red-500 text-xs">
+                      {errors.oab.message}
+                    </FormMessage>
+                  ) : (
+                    <FormDescription className="text-muted-foreground text-xs">
+                      Consulte um advogado(a) existente na OAB
+                    </FormDescription>
+                  )}
                 </FormItem>
               )}
             />
-          </div>
 
-          <FormField
-            control={form.control}
-            name="observation"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Observações</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Adicione informações relevantes sobre o atendimento"
-                    className="resize-none rounded min-h-24"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <SheetFooter className="flex items-center justify-end mt-8 flex-row gap-2 p-0">
-            <SheetClose asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                className="cursor-pointer rounded"
-              >
-                Cancelar
-              </Button>
-            </SheetClose>
             <Button
               type="submit"
-              className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
+              className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded w-full"
             >
-              <SquarePen className="size-4" />
-              Criar Atendimento
+              <UserSearch className="size-4" />
+              Buscar Advogado(a)
             </Button>
-          </SheetFooter>
-        </form>
-      </Form>
-    </SheetContent>
+          </form>
+        </Form>
+
+        {/* <div className="w-full">
+              <FormField
+                control={form.control}
+                name="assistance"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Forma do Atendimento</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="rounded w-full">
+                          <SelectValue placeholder="Selecione a forma do atendimento" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="rounded">
+                        <SelectItem value="PERSONALLY">Presencial</SelectItem>
+                        <SelectItem value="REMOTELY">Remoto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="observation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Observações</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Adicione informações relevantes sobre o atendimento"
+                      className="resize-none rounded min-h-24"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+
+        {/* <DialogFooter className="flex items-center justify-end mt-8 flex-row gap-2 p-0">
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="cursor-pointer rounded"
+                >
+                  Cancelar
+                </Button>
+              </DialogClose>
+              <Button
+                type="submit"
+                className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
+              >
+                <SquarePen className="size-4" />
+                Criar Atendimento
+              </Button>
+            </DialogFooter> */}
+      </DialogContent>
+    </Dialog>
   )
 }
