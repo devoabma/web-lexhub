@@ -33,8 +33,9 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
+import { motion } from 'framer-motion'
 import {
   CirclePlus,
   InfoIcon,
@@ -42,12 +43,10 @@ import {
   SquarePen,
   UserSearch,
 } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { getAll } from '@/api/services-types/get-all'
 
 const consultLawyerFormSchema = z.object({
   oab: z.string().min(1, {
@@ -71,6 +70,10 @@ const newServiceFormSchema = z.object({
 type NewServiceFormType = z.infer<typeof newServiceFormSchema>
 
 export function NewService() {
+  const [isMessageErrorApi, setIsMessageErrorApi] = useState<string | null>(
+    null
+  )
+
   const formConsultLawyer = useForm<ConsultLawyerFormType>({
     shouldUnregister: true,
     resolver: zodResolver(consultLawyerFormSchema),
@@ -104,14 +107,22 @@ export function NewService() {
   async function handleSearchLawyer(data: ConsultLawyerFormType) {
     try {
       await consultLawyerFn({ oab: data.oab })
+
+      setIsMessageErrorApi(null)
+
+      // Setar o advogado no formulário de novo atendimento
       formNewService.setValue('oab', data.oab)
     } catch (err) {
       formConsultLawyer.reset()
 
-      if (isAxiosError(err)) return
+      if (isAxiosError(err)) {
+        setIsMessageErrorApi(err.response?.data.message)
+
+        return
+      }
 
       toast.error('Houve um erro ao consultar o advogado(a)!', {
-        description: 'Por favor, tente novamente.',
+        description: 'Por favor, tente novamente mais tarde.',
       })
 
       console.log(err)
@@ -127,6 +138,7 @@ export function NewService() {
       onOpenChange={isOpen => {
         if (!isOpen) {
           reset()
+          setIsMessageErrorApi(null)
         }
       }}
     >
@@ -176,11 +188,30 @@ export function NewService() {
               )}
             />
 
-            {isError && (
+            {isMessageErrorApi && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              >
+                <Alert
+                  variant="destructive"
+                  className="rounded border border-amber-800 bg-amber-50 text-amber-800"
+                >
+                  <InfoIcon />
+                  <AlertTitle className="font-medium">Atenção</AlertTitle>
+                  <AlertDescription className="text-sm text-justify">
+                    {isMessageErrorApi}
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+
+            {isError && !isMessageErrorApi && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
               >
                 <Alert
                   variant="destructive"
@@ -223,7 +254,7 @@ export function NewService() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
           >
             <Form {...formNewService}>
               <form
