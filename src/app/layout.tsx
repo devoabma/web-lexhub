@@ -1,4 +1,5 @@
 import { ClientProvider } from '@/components/app/client-provider'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import './globals.css'
@@ -8,6 +9,15 @@ const inter = Inter({
   variable: '--font-inter',
   display: 'swap',
 })
+
+export const metadata: Metadata = {
+  description: '📚 Sistema de Gestão de Atendimentos da OAB Maranhão',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+}
 
 export default function RootLayout({
   children,

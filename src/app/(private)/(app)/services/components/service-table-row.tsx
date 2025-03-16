@@ -9,6 +9,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { CheckCircle, CircleX, Search } from 'lucide-react'
 import { useState } from 'react'
+import { CancelService } from './cancel-service'
 import { FinishedService } from './finished-service'
 import { ServiceDetails } from './service-details'
 
@@ -44,6 +45,7 @@ interface ServiceTableRowProps {
 
 export function ServiceTableRow({ services }: ServiceTableRowProps) {
   const [isFinishedDialogOpen, setIsFinishedDialogOpen] = useState(false)
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
 
   return (
     <TableRow
@@ -149,15 +151,25 @@ export function ServiceTableRow({ services }: ServiceTableRowProps) {
       </TableCell>
 
       <TableCell>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="rounded flex items-center cursor-pointer disabled:opacity-100"
-          disabled={services.status === 'COMPLETED'}
-        >
-          <CircleX className="size-3.5 text-rose-800" />
-          Cancelar
-        </Button>
+        <Dialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded flex items-center cursor-pointer disabled:opacity-100"
+              disabled={services.status === 'COMPLETED'}
+            >
+              <CircleX className="size-3.5 text-rose-800" />
+              Cancelar
+            </Button>
+          </DialogTrigger>
+
+          {/* FIXME: Componente de Cancelar Atendimento */}
+          <CancelService
+            services={services}
+            onOpenChange={setIsCancelDialogOpen}
+          />
+        </Dialog>
       </TableCell>
     </TableRow>
   )

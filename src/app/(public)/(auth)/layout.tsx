@@ -16,8 +16,8 @@ export default function AuthLayout({
 }>) {
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
-      <div className="order-2 flex h-full flex-col justify-between border-t border-foreground/5 bg-muted p-10 text-muted-foreground md:order-1 md:border-r">
-        <div className="flex flex-row justify-between items-center space-y-4 text-lg text-foreground md:text-2xl">
+      <div className="order-2 flex h-full flex-col justify-between border-t border-foreground/10 bg-gradient-to-br from-muted/75 via-muted to-muted/60 p-10 text-muted-foreground md:order-1 md:border-r shadow-lg">
+        <div className="flex flex-row justify-between items-center space-y-4 text-lg md:text-2xl">
           <Link href="/">
             <Image
               src={LogoOAB}
@@ -25,20 +25,21 @@ export default function AuthLayout({
               width={180}
               height={180}
               priority
+              className="hover:scale-105 transition-transform duration-300"
             />
           </Link>
 
-          <h1 className="flex font-calsans gap-2 justify-center text-base font-semibold md:text-lg lg:text-4xl">
+          <h1 className="flex font-calsans gap-2 justify-center text-base font-semibold md:text-lg lg:text-4xl text-foreground/90 hover:text-foreground transition-colors duration-300">
             OAB Atende
           </h1>
         </div>
 
         <div>
-          <footer className="text-sm">
+          <footer className="text-sm text-foreground/80 hover:text-foreground transition-colors duration-300">
             &copy; {new Date().getFullYear()} - Gerência de Tecnologia da
             Informação
           </footer>
-          <span className="block text-sm text-muted-foreground">
+          <span className="block text-sm text-muted-foreground/70 hover:text-muted-foreground/90 transition-colors duration-300">
             Todos os direitos reservados
           </span>
         </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { finishedService } from '@/api/services/finished-service'
+import { cancelService } from '@/api/services/cancel-service'
 import { Button } from '@/components/ui/button'
 import {
   DialogClose,
@@ -11,45 +11,43 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle, LoaderCircle } from 'lucide-react'
+import { LoaderCircle, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
-interface FinishedServiceProps {
+interface CancelServiceProps {
   services: {
     id: string
   }
   onOpenChange: (open: boolean) => void
 }
 
-export function FinishedService({
-  services,
-  onOpenChange,
-}: FinishedServiceProps) {
-  // FIXME: Mutation para se concluir atendimento
+export function CancelService({ services, onOpenChange }: CancelServiceProps) {
+  // FIXME: Mutation para se cancelar atendimento
   const queryClient = useQueryClient()
-  const { mutateAsync: finishedServiceFn, isPending: isFinishing } =
-    useMutation({
-      mutationFn: finishedService,
+  const { mutateAsync: cancelServiceFn, isPending: isCancelling } = useMutation(
+    {
+      mutationFn: cancelService,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['services'] })
       },
-    })
+    }
+  )
 
-  async function handleFinishedService() {
+  async function handleCancelService() {
     try {
-      await finishedServiceFn({
+      await cancelServiceFn({
         id: services.id,
       })
 
       onOpenChange(false)
 
-      toast.success('Atendimento concluído com sucesso!', {
-        description: 'Ótimo trabalho! Continue assim.',
+      toast.warning('Atendimento cancelado com sucesso!', {
+        description: 'Essa ação é irreversível.',
       })
     } catch (err) {
-      toast.error('Erro ao concluir atendimento', {
+      toast.error('Erro ao cancelar atendimento', {
         description:
-          'Não foi possível concluir o atendimento. Tente novamente.',
+          'Não foi possível cancelar o atendimento. Tente novamente.',
       })
     }
   }
@@ -57,9 +55,9 @@ export function FinishedService({
   return (
     <DialogContent className="rounded-2xl">
       <DialogHeader>
-        <DialogTitle>Concluir Atendimento</DialogTitle>
+        <DialogTitle>Cancelar Atendimento</DialogTitle>
         <DialogDescription>
-          O atendimento será finalizado. Deseja continuar?
+          O atendimento será cancelado. Deseja continuar?
         </DialogDescription>
       </DialogHeader>
 
@@ -70,19 +68,20 @@ export function FinishedService({
           </Button>
         </DialogClose>
         <Button
-          className="rounded cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white"
-          disabled={isFinishing}
-          onClick={handleFinishedService}
+          variant="destructive"
+          className="rounded cursor-pointer text-white"
+          disabled={isCancelling}
+          onClick={handleCancelService}
         >
-          {!isFinishing ? (
+          {!isCancelling ? (
             <>
-              <CheckCircle className="size-4" />
-              Concluir Atendimento
+              <XCircle className="size-4" />
+              Cancelar Atendimento
             </>
           ) : (
             <div className="flex items-center gap-2">
               <LoaderCircle className="size-4 animate-spin" />
-              Concluindo...
+              Cancelando...
             </div>
           )}
         </Button>
