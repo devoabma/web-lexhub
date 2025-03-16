@@ -1,12 +1,46 @@
 'use client'
 
+import AssistanceBadge from '@/components/app/assistance-badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
-import { CheckCircle, CircleX, Eye } from 'lucide-react'
+import { formatFullName } from '@/utils/format-full-name'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { CheckCircle, CircleX, Search } from 'lucide-react'
 import { ServiceDetails } from './service-details'
 
-export function ServiceTableRow() {
+interface ServiceTableRowProps {
+  services: {
+    id: string
+    assistance: 'PERSONALLY' | 'REMOTE'
+    observation: string | null
+    status: 'OPEN' | 'COMPLETED'
+    createdAt: string
+    finishedAt: string | null
+    lawyer: {
+      id: string
+      name: string
+      cpf: string
+      oab: string
+      email: string
+    }
+    agent: {
+      id: string
+      name: string
+      email: string
+      role: 'ADMIN' | 'MEMBER'
+    }
+    serviceTypes: {
+      serviceType: {
+        id: string
+        name: string
+      }
+    }[]
+  }
+}
+
+export function ServiceTableRow({ services }: ServiceTableRowProps) {
   return (
     <TableRow className="overflow-x-auto">
       <TableCell className="w-full border-r sm:w-auto">
@@ -17,41 +51,51 @@ export function ServiceTableRow() {
               size="sm"
               className="rounded cursor-pointer "
             >
-              <Eye className="size-3" />
+              <Search className="size-3.5" />
               <span className="sr-only">Detalhes do atendimento</span>
             </Button>
           </DialogTrigger>
 
           {/* FIXME: Componente de Detalhes do Atendimento */}
-          <ServiceDetails />
+          <ServiceDetails services={services} />
         </Dialog>
       </TableCell>
 
       <TableCell className="border-r">
-        <div className="flex items-center gap-2">
-          <span className="block h-2 w-2 rounded-full bg-emerald-500" />
-          <span className="text-xs font-medium">Em andamento</span>
-        </div>
+        {services.status === 'OPEN' ? (
+          <div className="flex items-center justify-center gap-2">
+            <span className="block h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="text-xs font-medium">Em andamento</span>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center gap-2">
+            <span className="block h-2 w-2 rounded-full bg-rose-500" />
+            <span className="text-xs font-medium">Concluído</span>
+          </div>
+        )}
       </TableCell>
 
-      <TableCell className="text-muted-foreground border-r">
-        há 5 minutos
+      <TableCell className="text-center border-r">
+        {formatDistanceToNow(new Date(services.createdAt), {
+          addSuffix: true,
+          locale: ptBR,
+        })}
       </TableCell>
 
-      <TableCell className="font-mono text-xs font-medium border-r">
-        PRESENCIAL
+      <TableCell className="font-mono text-xs font-medium text-center border-r">
+        <AssistanceBadge type={services.assistance} />
       </TableCell>
 
-      <TableCell className="font-mono text-xs font-medium border-r">
-        22158
+      <TableCell className="font-mono text-xs font-medium text-center border-r">
+        {services.lawyer.oab}
       </TableCell>
 
       <TableCell className="font-medium truncate max-w-xs border-r">
-        Dalene Ferreira Melo dos Santos
+        {formatFullName(services.lawyer.name)}
       </TableCell>
 
       <TableCell className="font-medium truncate max-w-xs border-r">
-        Hilquias Ferreira Melo
+        {services.agent.name}
       </TableCell>
 
       <TableCell>

@@ -1,8 +1,18 @@
 'use client'
 
+import { getAllWithoutPagination } from '@/api/services-types/get-all-without-pagination'
 import { consultLawyer } from '@/api/services/consult-lawyer'
+import { createService } from '@/api/services/create-service'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import {
   Dialog,
   DialogClose,
@@ -24,6 +34,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -32,11 +47,14 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { motion } from 'framer-motion'
 import {
+  Check,
+  ChevronsUpDown,
   CirclePlus,
   InfoIcon,
   LoaderCircle,
@@ -64,12 +82,15 @@ const newServiceFormSchema = z.object({
     message: 'Selecione pelo menos um tipo de serviço',
   }),
   observation: z.string().optional(),
-  assistance: z.enum(['PERSONALLY', 'REMOTE']).optional(),
+  assistance: z.enum(['PERSONALLY', 'REMOTE']),
 })
 
 type NewServiceFormType = z.infer<typeof newServiceFormSchema>
 
 export function NewService() {
+  const [isOpenDialog, setIsOpenDialog] = useState(false)
+  const [isOpenPopover, setIsOpenPopover] = useState(false)
+  const [selectedServiceTypes, setSelectedServiceTypes] = useState<string[]>([])
   const [isMessageErrorApi, setIsMessageErrorApi] = useState<string | null>(
     null
   )
@@ -93,6 +114,13 @@ export function NewService() {
     },
   })
 
+  // FIXME: Query para pegar os tipos de serviços
+  const { data: results } = useQuery({
+    queryKey: ['service-types'],
+    queryFn: () => getAllWithoutPagination(),
+    staleTime: Number.POSITIVE_INFINITY,
+  })
+
   // FIXME: Mutation para consultar o advogado a partir da OAB
   const {
     mutateAsync: consultLawyerFn,
@@ -102,7 +130,23 @@ export function NewService() {
     reset,
   } = useMutation({
     mutationFn: consultLawyer,
+    onSuccess: () => {
+      formNewService.reset()
+    },
   })
+
+  // FIXME: Mutation para criar um novo atendimento
+  const queryClient = useQueryClient()
+  const { mutateAsync: createNewServiceFn, isPending: isCreating } =
+    useMutation({
+      mutationFn: createService,
+      onSuccess: () => {
+        formNewService.reset()
+        reset()
+        queryClient.invalidateQueries({ queryKey: ['service-types'] })
+        queryClient.invalidateQueries({ queryKey: ['services'] })
+      },
+    })
 
   async function handleSearchLawyer(data: ConsultLawyerFormType) {
     try {
@@ -110,7 +154,7 @@ export function NewService() {
 
       setIsMessageErrorApi(null)
 
-      // Setar o advogado no formulário de novo atendimento
+      // Setar a oab do advogado no formulário de novo atendimento
       formNewService.setValue('oab', data.oab)
     } catch (err) {
       formConsultLawyer.reset()
@@ -129,17 +173,54 @@ export function NewService() {
     }
   }
 
-  function handleCreateNewService(data: NewServiceFormType) {
-    console.log(data)
+  async function handleCreateNewService(data: NewServiceFormType) {
+    try {
+      await createNewServiceFn({
+        oab: data.oab,
+        serviceTypeId: selectedServiceTypes,
+        observation: data.observation,
+        assistance: data.assistance,
+      })
+
+      setIsOpenDialog(false)
+
+      toast.success('Atendimento registrado com sucesso!', {
+        description:
+          'Confira as informações do atendimento na lista de atendimentos.',
+      })
+
+      // Fechar o Sheet quando o atendimento for registrado
+      setIsOpenPopover(false)
+    } catch (err) {
+      formNewService.reset()
+
+      if (isAxiosError(err)) {
+        toast.error('Houve um erro ao registrar o atendimento!', {
+          description: err.response?.data.message,
+        })
+
+        return
+      }
+
+      toast.error('Houve um erro ao registrar o atendimento!', {
+        description: 'Por favor, tente novamente.',
+      })
+
+      console.log(err)
+    }
   }
 
   return (
     <Dialog
+      open={isOpenDialog}
       onOpenChange={isOpen => {
         if (!isOpen) {
           reset()
+          formConsultLawyer.reset()
           setIsMessageErrorApi(null)
         }
+
+        setIsOpenDialog(isOpen)
       }}
     >
       <DialogTrigger asChild>
@@ -250,6 +331,7 @@ export function NewService() {
           </form>
         </Form>
 
+        {/* FIXME: Componente de Novo Servico se tiver advogado selecionado e adimplente */}
         {isSuccess && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -263,15 +345,91 @@ export function NewService() {
               >
                 <FormField
                   control={formNewService.control}
-                  name="assistance"
+                  name="serviceTypeId"
                   render={({ field }) => (
+                    <FormItem className="flex flex-col w-full">
+                      <FormLabel>Tipo de Serviço</FormLabel>
+                      <Popover
+                        open={isOpenPopover}
+                        onOpenChange={setIsOpenPopover}
+                      >
+                        <PopoverTrigger asChild>
+                          <FormControl className="rounded hover:bg-transparent">
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                'w-full justify-between rounded',
+                                !field.value.length && 'text-muted-foreground'
+                              )}
+                            >
+                              {field.value.length > 0
+                                ? `${field.value.length} serviço(s) selecionado(s)`
+                                : 'Selecione os tipos de serviço'}
+                              <ChevronsUpDown className="ml-2 size-4 rounded shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="w-full p-0 rounded">
+                          <Command>
+                            <CommandInput
+                              placeholder="Buscar tipo de serviço..."
+                              className="h-9 w-full"
+                            />
+                            <CommandList className="rounded">
+                              <CommandEmpty>
+                                Nenhum serviço encontrado.
+                              </CommandEmpty>
+                              <CommandGroup className="max-h-64 overflow-y-auto rounded">
+                                {results?.servicesTypes.map(type => (
+                                  <CommandItem
+                                    className="cursor-pointer rounded"
+                                    key={type.id}
+                                    value={type.name}
+                                    onSelect={() => {
+                                      const newValue = [...field.value]
+                                      const index = newValue.indexOf(type.id)
+                                      if (index === -1) {
+                                        newValue.push(type.id)
+                                      } else {
+                                        newValue.splice(index, 1)
+                                      }
+                                      field.onChange(newValue)
+
+                                      setSelectedServiceTypes(newValue)
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        'size-4',
+                                        field.value.includes(type.id)
+                                          ? 'opacity-100'
+                                          : 'opacity-0'
+                                      )}
+                                    />
+                                    {type.name}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={formNewService.control}
+                  name="assistance"
+                  render={({ field, formState: { errors } }) => (
                     <FormItem>
                       <FormLabel>Forma do Atendimento</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormControl>
+                        <FormControl className="rounded">
                           <SelectTrigger className="rounded w-full">
                             <SelectValue placeholder="Selecione a forma do atendimento" />
                           </SelectTrigger>
@@ -281,7 +439,12 @@ export function NewService() {
                           <SelectItem value="REMOTE">Remoto</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormMessage />
+
+                      {errors.assistance && (
+                        <FormMessage className="text-red-500 text-xs">
+                          {errors.assistance.message}
+                        </FormMessage>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -312,10 +475,20 @@ export function NewService() {
                   </DialogClose>
                   <Button
                     type="submit"
-                    className="bg-sky-700 hover:bg-sky-600 text-white"
+                    disabled={isCreating}
+                    className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
                   >
-                    <SquarePen className="size-4" />
-                    Criar Atendimento
+                    {isCreating ? (
+                      <>
+                        <LoaderCircle className="animate-spin" />
+                        Registrando...
+                      </>
+                    ) : (
+                      <>
+                        <SquarePen className="size-4" />
+                        Criar Atendimento
+                      </>
+                    )}
                   </Button>
                 </DialogFooter>
               </form>

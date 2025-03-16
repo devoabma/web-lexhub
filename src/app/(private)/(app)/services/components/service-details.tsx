@@ -12,85 +12,82 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
+import { calculateDurationService } from '@/utils/calculate-duration-service'
+import { formatFullName } from '@/utils/format-full-name'
 import { format } from 'date-fns'
 import {
   CheckCircle,
   Clock,
   FileText,
+  Mail,
   Monitor,
   User,
   UserCog,
 } from 'lucide-react'
 
-// Service data
-const service = {
-  id: '3b791653-6b9a-4d4c-ac25-0c5c458d0216',
-  assistance: 'PERSONALLY',
-  observation:
-    'Observação do atendimento geral de teste da tela de detalhes de atendimento.',
-  status: 'OPEN',
-  createdAt: new Date('2025-02-23T19:40:53.425Z'),
-  finishedAt: new Date('2025-02-23T22:46:33.082Z') || null,
-  lawyer: {
-    id: '0b21929e-16ba-4697-9f60-39e1adda88d6',
-    name: 'DALENE FERREIRA MELO DOS SANTOS',
-    cpf: '60519864301',
-    oab: '22158',
-    email: 'dalenefmeloadv@gmail.com',
-  },
-  agent: {
-    id: '0d64b983-894a-4532-9f1a-23e2a06c4f12',
-    name: 'Hilquias Ferreira Melo',
-    email: 'hilquiasfmelo@gmail.com',
-    role: 'ADMIN',
-  },
-  serviceTypes: [
-    {
+interface ServiceDetailsProps {
+  services: {
+    id: string
+    assistance: 'PERSONALLY' | 'REMOTE'
+    observation: string | null
+    status: 'OPEN' | 'COMPLETED'
+    createdAt: string
+    finishedAt: string | null
+    lawyer: {
+      id: string
+      name: string
+      cpf: string
+      oab: string
+      email: string
+    }
+    agent: {
+      id: string
+      name: string
+      email: string
+      role: 'ADMIN' | 'MEMBER'
+    }
+    serviceTypes: {
       serviceType: {
-        id: 'cm79sstmi0000i3m028engmfh',
-        name: 'Instalação e configuração total para usar o PJE',
-      },
-    },
-    {
-      serviceType: {
-        id: 'cm79sstmi0000i3m028engmfg',
-        name: 'Instalação e configuração total para usar o SEEU',
-      },
-    },
-  ],
+        id: string
+        name: string
+      }
+    }[]
+  }
 }
 
-export function ServiceDetails() {
+export function ServiceDetails({ services }: ServiceDetailsProps) {
   // Formatação de datas
-  const formattedCreatedAt = format(service.createdAt, "dd/MM/yyyy 'às' HH:mm")
-  const formattedFinishedAt = service.finishedAt
-    ? format(service.finishedAt, "dd/MM/yyyy 'às' HH:mm")
+  const formattedCreatedAt = format(services.createdAt, "dd/MM/yyyy 'às' HH:mm")
+  const formattedFinishedAt = services.finishedAt
+    ? format(services.finishedAt, "dd/MM/yyyy 'às' HH:mm")
     : ''
 
   // Calcula duração do atendimento em horas
-  const durationMs = service.finishedAt.getTime() - service.createdAt.getTime()
-  const hours = Math.floor(durationMs / (1000 * 60 * 60))
-  const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
-  const durationText = `${hours}h ${minutes}min`
+  const durationService = calculateDurationService({
+    createdAt: services.createdAt,
+    finishedAt: services.finishedAt,
+  })
 
   return (
-    <DialogContent className="mx-auto sm:w-[90%] rounded">
+    <DialogContent className="sm:max-w-md md:max-w-lg overflow-y-auto px-4 rounded">
       <DialogHeader className="mt-4">
         <div className="flex items-center justify-between">
           <DialogTitle className="text-xl font-calsans font-bold">
             Detalhes do Atendimento
           </DialogTitle>
           <Badge
-            variant={service.status === 'COMPLETED' ? 'closed' : 'open'}
+            variant={services.status === 'COMPLETED' ? 'closed' : 'open'}
             className="ml-2 rounded-full"
           >
-            {service.status === 'COMPLETED' ? 'Finalizado' : 'Em andamento'}
+            {services.status === 'COMPLETED' ? 'Concluído' : 'Em andamento'}
           </Badge>
         </div>
         <DialogDescription className="font-mono tracking-tight">
-          ID: {service.id}
+          ID: {services.id}
         </DialogDescription>
       </DialogHeader>
+
+      <Separator orientation="horizontal" />
 
       <div className="space-y-6 py-2">
         {/* Service Type Section */}
@@ -101,9 +98,9 @@ export function ServiceDetails() {
           </div>
           <div className="pl-6">
             <ul className="list-disc list-inside space-y-1 font-medium text-muted-foreground">
-              {service.serviceTypes.map(serviceType => (
-                <li key={serviceType.serviceType.id} className="text-sm">
-                  {serviceType.serviceType.name}
+              {services.serviceTypes.map(data => (
+                <li key={data.serviceType.id} className="text-sm">
+                  {data.serviceType.name}
                 </li>
               ))}
             </ul>
@@ -111,7 +108,7 @@ export function ServiceDetails() {
             <p className="text-sm flex items-center gap-2 mt-2 text-muted-foreground">
               <Monitor className="size-4" />
               Atendimento:{' '}
-              {service.assistance === 'PERSONALLY' ? 'Presencial' : 'Remoto'}
+              {services.assistance === 'PERSONALLY' ? 'Presencial' : 'Remoto'}
             </p>
           </div>
         </div>
@@ -127,7 +124,7 @@ export function ServiceDetails() {
           <div className="flex items-center gap-4 pl-6">
             <Avatar className="size-12 border">
               <AvatarFallback>
-                {service.lawyer.name
+                {services.lawyer.name
                   .split(' ')
                   .map(n => n[0])
                   .join('')
@@ -135,12 +132,15 @@ export function ServiceDetails() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{service.lawyer.name}</p>
-              <p className="text-sm text-muted-foreground">
-                OAB: {service.lawyer.oab}
+              <p className="font-medium">
+                {formatFullName(services.lawyer.name)}
               </p>
               <p className="text-sm text-muted-foreground">
-                {service.lawyer.email}
+                OAB: {services.lawyer.oab}
+              </p>
+              <p className="text-sm inline-flex items-center gap-1.5 text-muted-foreground">
+                <Mail className="size-4" />
+                {services.lawyer.email}
               </p>
             </div>
           </div>
@@ -157,7 +157,7 @@ export function ServiceDetails() {
           <div className="flex items-center gap-4 pl-6">
             <Avatar className="size-12 border">
               <AvatarFallback>
-                {service.agent.name
+                {services.agent.name
                   .split(' ')
                   .map(n => n[0])
                   .join('')
@@ -165,13 +165,14 @@ export function ServiceDetails() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{service.agent.name}</p>
+              <p className="font-medium">{services.agent.name}</p>
               <p className="text-sm text-muted-foreground">
                 Função:{' '}
-                {service.agent.role === 'ADMIN' ? 'Administrador' : 'Membro'}
+                {services.agent.role === 'ADMIN' ? 'Administrador' : 'Membro'}
               </p>
-              <p className="text-sm text-muted-foreground">
-                {service.agent.email}
+              <p className="text-sm inline-flex items-center gap-1.5 text-muted-foreground">
+                <Mail className="size-4" />
+                {services.agent.email}
               </p>
             </div>
           </div>
@@ -187,9 +188,9 @@ export function ServiceDetails() {
           </div>
           <div className="pl-6 bg-muted/50 p-3 rounded">
             <p className="text-sm">
-              {service.observation === ''
+              {services.observation === ''
                 ? 'Nenhuma observação informada.'
-                : service.observation}
+                : services.observation}
             </p>
           </div>
         </div>
@@ -203,7 +204,7 @@ export function ServiceDetails() {
             <span className="font-medium">{formattedCreatedAt}</span>
           </div>
 
-          {service.status === 'COMPLETED' && (
+          {services.status === 'COMPLETED' && (
             <>
               <div className="flex items-center gap-1">
                 <CheckCircle className="size-4 text-muted-foreground" />
@@ -214,7 +215,7 @@ export function ServiceDetails() {
               <div className="flex items-center gap-1">
                 <Clock className="size-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Duração total:</span>
-                <span className="font-medium ml-1">{durationText}</span>
+                <span className="font-medium ml-1">{durationService}</span>
               </div>
             </>
           )}
