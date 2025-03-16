@@ -8,6 +8,8 @@ import { formatFullName } from '@/utils/format-full-name'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { CheckCircle, CircleX, Search } from 'lucide-react'
+import { useState } from 'react'
+import { FinishedService } from './finished-service'
 import { ServiceDetails } from './service-details'
 
 interface ServiceTableRowProps {
@@ -41,8 +43,12 @@ interface ServiceTableRowProps {
 }
 
 export function ServiceTableRow({ services }: ServiceTableRowProps) {
+  const [isFinishedDialogOpen, setIsFinishedDialogOpen] = useState(false)
+
   return (
-    <TableRow className="overflow-x-auto">
+    <TableRow
+      className={`overflow-x-auto ${services.status === 'COMPLETED' && 'opacity-50'}`}
+    >
       <TableCell className="w-full border-r sm:w-auto">
         <Dialog>
           <DialogTrigger asChild>
@@ -63,12 +69,12 @@ export function ServiceTableRow({ services }: ServiceTableRowProps) {
 
       <TableCell className="border-r">
         {services.status === 'OPEN' ? (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center gap-2">
             <span className="block h-2 w-2 rounded-full bg-emerald-500" />
             <span className="text-xs font-medium">Em andamento</span>
           </div>
         ) : (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center gap-2">
             <span className="block h-2 w-2 rounded-full bg-rose-500" />
             <span className="text-xs font-medium">Concluído</span>
           </div>
@@ -76,10 +82,18 @@ export function ServiceTableRow({ services }: ServiceTableRowProps) {
       </TableCell>
 
       <TableCell className="text-center border-r">
-        {formatDistanceToNow(new Date(services.createdAt), {
-          addSuffix: true,
-          locale: ptBR,
-        })}
+        {services.status === 'OPEN'
+          ? formatDistanceToNow(new Date(services.createdAt), {
+              addSuffix: true,
+              locale: ptBR,
+            })
+          : formatDistanceToNow(
+              (services.finishedAt && new Date(services.finishedAt)) as Date,
+              {
+                addSuffix: true,
+                locale: ptBR,
+              }
+            )}
       </TableCell>
 
       <TableCell className="font-mono text-xs font-medium text-center border-r">
@@ -99,23 +113,49 @@ export function ServiceTableRow({ services }: ServiceTableRowProps) {
       </TableCell>
 
       <TableCell>
-        <Button
-          variant="outline"
-          size="sm"
-          className="rounded flex items-center cursor-pointer"
+        <Dialog
+          open={isFinishedDialogOpen}
+          onOpenChange={setIsFinishedDialogOpen}
         >
-          <CheckCircle className="size-3 text-yellow-600" />
-          Concluir
-        </Button>
+          <DialogTrigger asChild>
+            {services.status === 'OPEN' ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded flex items-center cursor-pointer"
+              >
+                <CheckCircle className="size-3.5 text-yellow-600" />
+                Concluir
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={services.status === 'COMPLETED'}
+                className="rounded flex items-center cursor-pointer disabled:opacity-100"
+              >
+                <CheckCircle className="size-3.5 text-emerald-600" />
+                Concluído
+              </Button>
+            )}
+          </DialogTrigger>
+
+          {/* FIXME: Componente de Concluir Atendimento */}
+          <FinishedService
+            services={services}
+            onOpenChange={setIsFinishedDialogOpen}
+          />
+        </Dialog>
       </TableCell>
 
       <TableCell>
         <Button
           variant="ghost"
           size="sm"
-          className="rounded flex items-center cursor-pointer"
+          className="rounded flex items-center cursor-pointer disabled:opacity-100"
+          disabled={services.status === 'COMPLETED'}
         >
-          <CircleX className="size-3 text-rose-800" />
+          <CircleX className="size-3.5 text-rose-800" />
           Cancelar
         </Button>
       </TableCell>

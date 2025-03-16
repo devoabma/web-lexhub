@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/table'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
 import { z } from 'zod'
 import { TypesTableFilters } from './types-table-filters'
 import { ServicesTypesTableRow } from './types-table-row'
@@ -76,6 +75,7 @@ export function ServicesTypesList() {
         pageIndex={pageIndex}
         totalCount={results?.total ?? 0}
         perPage={10}
+        finalText="serviço(s)"
       />
     </>
   )

@@ -76,6 +76,7 @@ export function AgentsList() {
         pageIndex={pageIndex}
         totalCount={results?.total ?? 0}
         perPage={10}
+        finalText="funcionário(s)"
       />
     </>
   )

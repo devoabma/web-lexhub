@@ -2,6 +2,11 @@ import { API } from '@/lib/axios'
 
 interface GetAllQuery {
   pageIndex?: number | null
+  oab?: string | null
+  lawyerName?: string | null
+  agentName?: string | null
+  assistance?: string | null
+  status?: string | null
 }
 
 interface GetAllServicesProps {
@@ -35,10 +40,22 @@ interface GetAllServicesProps {
   total: number
 }
 
-export async function getAllServices({ pageIndex }: GetAllQuery) {
+export async function getAllServices({
+  pageIndex,
+  oab,
+  lawyerName,
+  agentName,
+  assistance,
+  status,
+}: GetAllQuery) {
   const response = await API.get<GetAllServicesProps>('/services/all', {
     params: {
       pageIndex,
+      oab,
+      lawyerName,
+      agentName,
+      assistance,
+      status,
     } as GetAllQuery,
   })
 

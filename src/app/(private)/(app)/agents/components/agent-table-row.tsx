@@ -77,11 +77,11 @@ export function AgentTableRow({ agents }: AgentTableRowProps) {
         }`}
       >
         {isAdmin ? (
-          <Badge className="bg-indigo-900 rounded-full text-white font-bold gap-1.5 px-3 py-1">
+          <Badge className="bg-purple-900 border border-purple-900 text-slate-200 rounded-full font-bold">
             ADMINISTRADOR
           </Badge>
         ) : (
-          <Badge className="bg-blue-700 rounded-full text-white font-bold gap-1.5 px-3 py-1">
+          <Badge className="bg-cyan-900 border border-cyan-900 text-slate-200 rounded-full font-bold">
             MEMBRO
           </Badge>
         )}

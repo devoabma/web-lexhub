@@ -12,6 +12,7 @@ export interface PaginationProps {
   pageIndex: number
   totalCount: number
   perPage: number
+  finalText: string
   onPageChange: (pageIndex: number) => Promise<void> | void
 }
 
@@ -19,6 +20,7 @@ export function Pagination({
   pageIndex,
   totalCount,
   perPage,
+  finalText,
   onPageChange,
 }: PaginationProps) {
   // FIXME: Busca o total de paginas senão usar o totalCount
@@ -27,7 +29,7 @@ export function Pagination({
   return (
     <div className="flex items-center justify-between">
       <span className="text-sm text-muted-foreground">
-        Total de {totalCount} item(s)
+        Total de {totalCount} {finalText}
       </span>
 
       <div className="flex items-center gap-6 lg:gap-8">
