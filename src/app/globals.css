@@ -105,6 +105,28 @@
   will-change: transform, opacity; /* Otimiza a renderização */
 }
 
+/* Estiliza toda a scrollbar */
+::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+/* Fundo da scrollbar */
+::-webkit-scrollbar-track {
+  background: #1e293b !important; /* Slate-800 */
+  border-radius: 8px !important;
+}
+
+/* Cor da barra deslizante */
+::-webkit-scrollbar-thumb {
+  background: #475569 !important; /* Slate-600 */
+  border-radius: 8px !important;
+}
+
+/* Quando passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b !important; /* Slate-500 */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -82,7 +82,9 @@ const newServiceFormSchema = z.object({
     message: 'Selecione pelo menos um tipo de serviço',
   }),
   observation: z.string().optional(),
-  assistance: z.enum(['PERSONALLY', 'REMOTE']),
+  assistance: z.enum(['PERSONALLY', 'REMOTE'], {
+    message: 'Selecione a forma de atendimento',
+  }),
 })
 
 type NewServiceFormType = z.infer<typeof newServiceFormSchema>
@@ -380,7 +382,8 @@ export function NewService() {
                               <CommandEmpty>
                                 Nenhum serviço encontrado.
                               </CommandEmpty>
-                              <CommandGroup className="max-h-64 overflow-y-auto rounded">
+
+                              <CommandGroup className="max-h-32 overflow-y-scroll! rounded">
                                 {results?.servicesTypes.map(type => (
                                   <CommandItem
                                     className="cursor-pointer rounded"
