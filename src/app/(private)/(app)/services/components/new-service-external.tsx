@@ -1,5 +1,7 @@
 'use client'
 
+import { getAllWithoutPagination } from '@/api/services-types/get-all-without-pagination'
+import { createServiceExternal } from '@/api/services/create-service-external'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -44,8 +46,13 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
 import { Check, ChevronsUpDown, SquarePen } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { PatternFormat } from 'react-number-format'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const newServiceExternalFormSchema = z.object({
@@ -53,10 +60,10 @@ const newServiceExternalFormSchema = z.object({
     message: 'O número da OAB é obrigatório',
   }),
   name: z.string().min(1, {
-    message: 'O nome é obrigatório',
+    message: 'O nome do advogado(a) é obrigatório',
   }),
   cpf: z.string().min(1, {
-    message: 'O CPF é obrigatório',
+    message: 'O número do CPF é obrigatório',
   }),
   email: z.string().email({
     message: 'O e-mail é obrigatório',
@@ -65,12 +72,17 @@ const newServiceExternalFormSchema = z.object({
     message: 'Selecione pelo menos um tipo de serviço',
   }),
   observation: z.string().optional(),
-  assistance: z.enum(['PERSONALLY', 'REMOTE']),
+  assistance: z.enum(['PERSONALLY', 'REMOTE'], {
+    message: 'Selecione a forma de atendimento',
+  }),
 })
 
 type NewServiceExternalFormType = z.infer<typeof newServiceExternalFormSchema>
 
 export function NewServiceExternal() {
+  const [isOpenDialog, setIsOpenDialog] = useState(false)
+  const [selectedServiceTypes, setSelectedServiceTypes] = useState<string[]>([])
+
   const form = useForm<NewServiceExternalFormType>({
     shouldUnregister: true,
     resolver: zodResolver(newServiceExternalFormSchema),
@@ -85,8 +97,53 @@ export function NewServiceExternal() {
     },
   })
 
-  async function handleCreateNewService(data: NewServiceExternalFormType) {
-    console.log(data)
+  // FIXME: Query para pegar os tipos de serviços
+  const { data: results } = useQuery({
+    queryKey: ['service-types'],
+    queryFn: () => getAllWithoutPagination(),
+    staleTime: Number.POSITIVE_INFINITY,
+  })
+
+  // FIXME: Mutation para criar um novo atendimento externo
+  const queryClient = useQueryClient()
+  const { mutateAsync: createServiceExternalFn } = useMutation({
+    mutationFn: createServiceExternal,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['service-types'] })
+      queryClient.invalidateQueries({ queryKey: ['services'] })
+    },
+  })
+
+  async function handleCreateNewServiceExternal(
+    data: NewServiceExternalFormType
+  ) {
+    try {
+      await createServiceExternalFn({
+        oab: data.oab,
+        name: data.name,
+        cpf: data.cpf,
+        email: data.email,
+        serviceTypeId: selectedServiceTypes,
+        observation: data.observation,
+        assistance: data.assistance,
+      })
+    } catch (err) {
+      form.reset()
+
+      if (isAxiosError(err)) {
+        toast.error('Houve um erro ao registrar o atendimento externo!', {
+          description: err.response?.data.message,
+        })
+
+        return
+      }
+
+      toast.error('Houve um erro ao registrar o atendimento externo!', {
+        description: 'Por favor, tente novamente.',
+      })
+
+      console.log(err)
+    }
   }
 
   return (
@@ -114,7 +171,7 @@ export function NewServiceExternal() {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleCreateNewService)}
+            onSubmit={form.handleSubmit(handleCreateNewServiceExternal)}
             className="space-y-6 pt-2"
           >
             <FormField
@@ -126,10 +183,6 @@ export function NewServiceExternal() {
                   <FormControl>
                     <Input {...field} className="rounded" />
                   </FormControl>
-
-                  <FormMessage className="text-red-500 text-xs">
-                    {errors.oab?.message}
-                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -143,10 +196,6 @@ export function NewServiceExternal() {
                   <FormControl>
                     <Input {...field} className="rounded" />
                   </FormControl>
-
-                  <FormMessage className="text-red-500 text-xs">
-                    {errors.name?.message}
-                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -154,16 +203,27 @@ export function NewServiceExternal() {
             <FormField
               control={form.control}
               name="cpf"
-              render={({ field, formState: { errors } }) => (
+              render={({
+                field: { onChange, ...field },
+                formState: { errors },
+              }) => (
                 <FormItem>
                   <FormLabel>Número de CPF</FormLabel>
                   <FormControl>
-                    <Input {...field} className="rounded" />
+                    <PatternFormat
+                      format="###.###.###-##"
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={values => {
+                        onChange(values.value)
+                      }}
+                      defaultValue=""
+                      autoComplete="off"
+                      allowEmptyFormatting={false}
+                      data-error={Boolean(errors.cpf)}
+                      className="flex h-9 w-full rounded border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[error=true]:border-red-600 data-[error=true]:focus-visible:ring-0"
+                    />
                   </FormControl>
-
-                  <FormMessage className="text-red-500 text-xs">
-                    {errors.cpf?.message}
-                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -177,10 +237,6 @@ export function NewServiceExternal() {
                   <FormControl>
                     <Input {...field} className="rounded" />
                   </FormControl>
-
-                  <FormMessage className="text-red-500 text-xs">
-                    {errors.email?.message}
-                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -220,35 +276,36 @@ export function NewServiceExternal() {
                             Nenhum serviço encontrado.
                           </CommandEmpty>
                           <CommandGroup className="max-h-64 overflow-y-auto rounded">
-                            {/* {results?.servicesTypes.map(type => ( */}
-                            <CommandItem
-                              className="cursor-pointer rounded"
-                              // key={type.id}
-                              // value={type.name}
-                              onSelect={() => {
-                                const newValue = [...field.value]
-                                // const index = newValue.indexOf(type.id)
-                                // if (index === -1) {
-                                //   newValue.push(type.id)
-                                // } else {
-                                //   newValue.splice(index, 1)
-                                // }
-                                field.onChange(newValue)
+                            {results?.servicesTypes.map(type => (
+                              <CommandItem
+                                className="cursor-pointer rounded"
+                                key={type.id}
+                                value={type.name}
+                                onSelect={() => {
+                                  const newValue = [...field.value]
+                                  const index = newValue.indexOf(type.id)
+                                  if (index === -1) {
+                                    newValue.push(type.id)
+                                  } else {
+                                    newValue.splice(index, 1)
+                                  }
+                                  field.onChange(newValue)
 
-                                // setSelectedServiceTypes(newValue)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  'size-4'
-                                  // field.value.includes(type.id)
-                                  //   ? 'opacity-100'
-                                  //   : 'opacity-0'
-                                )}
-                              />
-                              {/* {type.name} */}
-                            </CommandItem>
-                            {/* ))} */}
+                                  // Recebe os tipos de serviços selecionados
+                                  setSelectedServiceTypes(newValue)
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    'size-4',
+                                    field.value.includes(type.id)
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                                {type.name}
+                              </CommandItem>
+                            ))}
                           </CommandGroup>
                         </CommandList>
                       </Command>
@@ -278,12 +335,6 @@ export function NewServiceExternal() {
                       <SelectItem value="REMOTE">Remoto</SelectItem>
                     </SelectContent>
                   </Select>
-
-                  {errors.assistance && (
-                    <FormMessage className="text-red-500 text-xs">
-                      {errors.assistance.message}
-                    </FormMessage>
-                  )}
                 </FormItem>
               )}
             />

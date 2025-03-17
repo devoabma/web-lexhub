@@ -5,6 +5,7 @@ import { Pagination } from '@/components/app/pagination'
 import {
   Table,
   TableBody,
+  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
@@ -48,6 +49,12 @@ export function ServicesTypesList() {
 
       <div className="border rounded mt-8">
         <Table>
+          {results?.servicesTypes.length === 0 && (
+            <TableCaption className="pb-4 text-muted-foreground">
+              Não encontramos nenhum tipo de serviço cadastrado.
+            </TableCaption>
+          )}
+
           <TableHeader>
             <TableRow className="overflow-x-auto">
               <TableHead className="w-28">Identificador</TableHead>

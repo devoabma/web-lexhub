@@ -48,6 +48,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
+import { formatFullName } from '@/utils/format-full-name'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
@@ -89,9 +90,14 @@ const newServiceFormSchema = z.object({
 
 type NewServiceFormType = z.infer<typeof newServiceFormSchema>
 
+interface NewServiceResponse {
+  name: string
+}
+
 export function NewService() {
   const [isOpenDialog, setIsOpenDialog] = useState(false)
   const [isOpenPopover, setIsOpenPopover] = useState(false)
+  const [isNameResponse, setIsNameResponse] = useState<string | null>()
   const [selectedServiceTypes, setSelectedServiceTypes] = useState<string[]>([])
   const [isMessageErrorApi, setIsMessageErrorApi] = useState<string | null>(
     null
@@ -152,7 +158,11 @@ export function NewService() {
 
   async function handleSearchLawyer(data: ConsultLawyerFormType) {
     try {
-      await consultLawyerFn({ oab: data.oab })
+      const { name } = (await consultLawyerFn({
+        oab: data.oab,
+      })) as NewServiceResponse
+
+      setIsNameResponse(name)
 
       setIsMessageErrorApi(null)
 
@@ -160,6 +170,8 @@ export function NewService() {
       formNewService.setValue('oab', data.oab)
     } catch (err) {
       formConsultLawyer.reset()
+
+      setIsNameResponse(isNameResponse)
 
       if (isAxiosError(err)) {
         setIsMessageErrorApi(err.response?.data.message)
@@ -185,6 +197,7 @@ export function NewService() {
       })
 
       setIsOpenDialog(false)
+      setIsNameResponse('')
 
       toast.success('Atendimento registrado com sucesso!', {
         description:
@@ -220,6 +233,7 @@ export function NewService() {
           reset()
           formConsultLawyer.reset()
           setIsMessageErrorApi(null)
+          setIsNameResponse('')
         }
 
         setIsOpenDialog(isOpen)
@@ -271,6 +285,14 @@ export function NewService() {
               )}
             />
 
+            {isNameResponse && (
+              <Alert className="rounded border border-emerald-800  bg-emerald-50 text-emerald-800 p-2">
+                <AlertTitle className="font-medium text-center">
+                  {formatFullName(isNameResponse)}
+                </AlertTitle>
+              </Alert>
+            )}
+
             {isMessageErrorApi && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -282,32 +304,8 @@ export function NewService() {
                   className="rounded border border-amber-800 bg-amber-50 text-amber-800"
                 >
                   <InfoIcon />
-                  <AlertTitle className="font-medium">Atenção</AlertTitle>
                   <AlertDescription className="text-sm text-justify">
                     {isMessageErrorApi}
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
-
-            {isError && !isMessageErrorApi && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              >
-                <Alert
-                  variant="destructive"
-                  className="rounded border border-amber-800 bg-amber-50 text-amber-800"
-                >
-                  <InfoIcon />
-                  <AlertTitle className="font-medium">
-                    Aviso Importante
-                  </AlertTitle>
-                  <AlertDescription className="text-sm text-justify">
-                    Prezado(a) advogado(a), no momento, não podemos prosseguir
-                    com o atendimento. Para mais informações, entre em contato
-                    com o Setor Financeiro.
                   </AlertDescription>
                 </Alert>
               </motion.div>
@@ -345,6 +343,36 @@ export function NewService() {
                 onSubmit={formNewService.handleSubmit(handleCreateNewService)}
                 className="space-y-6 pt-2"
               >
+                <FormField
+                  control={formNewService.control}
+                  name="assistance"
+                  render={({ field, formState: { errors } }) => (
+                    <FormItem>
+                      <FormLabel>Forma do Atendimento</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl className="rounded">
+                          <SelectTrigger className="rounded w-full">
+                            <SelectValue placeholder="Selecione a forma do atendimento" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded">
+                          <SelectItem value="PERSONALLY">Presencial</SelectItem>
+                          <SelectItem value="REMOTE">Remoto</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {errors.assistance && (
+                        <FormMessage className="text-red-500 text-xs">
+                          {errors.assistance.message}
+                        </FormMessage>
+                      )}
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={formNewService.control}
                   name="serviceTypeId"
@@ -418,36 +446,6 @@ export function NewService() {
                           </Command>
                         </PopoverContent>
                       </Popover>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={formNewService.control}
-                  name="assistance"
-                  render={({ field, formState: { errors } }) => (
-                    <FormItem>
-                      <FormLabel>Forma do Atendimento</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl className="rounded">
-                          <SelectTrigger className="rounded w-full">
-                            <SelectValue placeholder="Selecione a forma do atendimento" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="rounded">
-                          <SelectItem value="PERSONALLY">Presencial</SelectItem>
-                          <SelectItem value="REMOTE">Remoto</SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      {errors.assistance && (
-                        <FormMessage className="text-red-500 text-xs">
-                          {errors.assistance.message}
-                        </FormMessage>
-                      )}
                     </FormItem>
                   )}
                 />

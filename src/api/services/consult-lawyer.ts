@@ -5,7 +5,9 @@ interface ConsultLawyerProps {
 }
 
 export async function consultLawyer({ oab }: ConsultLawyerProps) {
-  await API.post('/services/consult/lawyer', {
+  const response = await API.post('/services/consult/lawyer', {
     oab,
   })
+
+  return response.data
 }

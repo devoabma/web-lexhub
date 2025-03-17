@@ -5,6 +5,7 @@ import { Pagination } from '@/components/app/pagination'
 import {
   Table,
   TableBody,
+  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
@@ -50,6 +51,12 @@ export function AgentsList() {
 
       <div className="border rounded mt-8">
         <Table>
+          {results?.agents.length === 0 && (
+            <TableCaption className="pb-4 text-muted-foreground">
+              Não encontramos nenhum funcionário cadastrado.
+            </TableCaption>
+          )}
+
           <TableHeader>
             <TableRow>
               <TableHead className="w-1" />

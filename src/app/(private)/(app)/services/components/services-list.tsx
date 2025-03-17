@@ -5,6 +5,7 @@ import { Pagination } from '@/components/app/pagination'
 import {
   Table,
   TableBody,
+  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
@@ -68,6 +69,12 @@ export function ServicesList() {
 
       <div className="border rounded mt-8">
         <Table>
+          {results?.services.length === 0 && (
+            <TableCaption className="pb-4 text-muted-foreground">
+              Não encontramos nenhum atendimento cadastrado.
+            </TableCaption>
+          )}
+
           <TableHeader>
             <TableRow>
               <TableHead className="w-12" />
@@ -87,7 +94,7 @@ export function ServicesList() {
           </TableHeader>
 
           {/* FIXME: Componente Service Table Row */}
-          <TableBody>
+          <TableBody className="border-b">
             {results?.services.map(service => {
               return <ServiceTableRow key={service.id} services={service} />
             })}
