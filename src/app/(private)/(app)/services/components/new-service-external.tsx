@@ -48,7 +48,7 @@ import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { Check, ChevronsUpDown, SquarePen } from 'lucide-react'
+import { Check, ChevronsUpDown, LoaderCircle, SquarePen } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { PatternFormat } from 'react-number-format'
@@ -106,13 +106,14 @@ export function NewServiceExternal() {
 
   // FIXME: Mutation para criar um novo atendimento externo
   const queryClient = useQueryClient()
-  const { mutateAsync: createServiceExternalFn } = useMutation({
-    mutationFn: createServiceExternal,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['service-types'] })
-      queryClient.invalidateQueries({ queryKey: ['services'] })
-    },
-  })
+  const { mutateAsync: createServiceExternalFn, isPending: isCreating } =
+    useMutation({
+      mutationFn: createServiceExternal,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['service-types'] })
+        queryClient.invalidateQueries({ queryKey: ['services'] })
+      },
+    })
 
   async function handleCreateNewServiceExternal(
     data: NewServiceExternalFormType
@@ -126,6 +127,13 @@ export function NewServiceExternal() {
         serviceTypeId: selectedServiceTypes,
         observation: data.observation,
         assistance: data.assistance,
+      })
+
+      setIsOpenDialog(false)
+
+      toast.success('Atendimento registrado com sucesso!', {
+        description:
+          'Confira as informações do atendimento na lista de atendimentos.',
       })
     } catch (err) {
       form.reset()
@@ -147,7 +155,7 @@ export function NewServiceExternal() {
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
       <DialogTrigger asChild>
         <Button
           variant="ghost"
@@ -243,6 +251,30 @@ export function NewServiceExternal() {
 
             <FormField
               control={form.control}
+              name="assistance"
+              render={({ field, formState: { errors } }) => (
+                <FormItem>
+                  <FormLabel>Forma do Atendimento</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl className="rounded">
+                      <SelectTrigger className="rounded w-full">
+                        <SelectValue placeholder="Selecione a forma do atendimento" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded">
+                      <SelectItem value="PERSONALLY">Presencial</SelectItem>
+                      <SelectItem value="REMOTE">Remoto</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="serviceTypeId"
               render={({ field }) => (
                 <FormItem className="flex flex-col w-full">
@@ -317,30 +349,6 @@ export function NewServiceExternal() {
 
             <FormField
               control={form.control}
-              name="assistance"
-              render={({ field, formState: { errors } }) => (
-                <FormItem>
-                  <FormLabel>Forma do Atendimento</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl className="rounded">
-                      <SelectTrigger className="rounded w-full">
-                        <SelectValue placeholder="Selecione a forma do atendimento" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="rounded">
-                      <SelectItem value="PERSONALLY">Presencial</SelectItem>
-                      <SelectItem value="REMOTE">Remoto</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="observation"
               render={({ field }) => (
                 <FormItem>
@@ -365,20 +373,20 @@ export function NewServiceExternal() {
               </DialogClose>
               <Button
                 type="submit"
-                // disabled={isCreating}
+                disabled={isCreating}
                 className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
               >
-                {/* {isCreating ? (
+                {isCreating ? (
                   <>
                     <LoaderCircle className="animate-spin" />
                     Registrando...
                   </>
                 ) : (
-                  <> */}
-                <SquarePen className="size-4" />
-                Criar Atendimento
-                {/* </>
-                )} */}
+                  <>
+                    <SquarePen className="size-4" />
+                    Criar Atendimento
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </form>

@@ -60,6 +60,7 @@ import {
   InfoIcon,
   LoaderCircle,
   SquarePen,
+  UserCheck,
   UserSearch,
 } from 'lucide-react'
 import { useState } from 'react'
@@ -133,7 +134,6 @@ export function NewService() {
   const {
     mutateAsync: consultLawyerFn,
     isPending: isConsulting,
-    isError,
     isSuccess,
     reset,
   } = useMutation({
@@ -171,7 +171,7 @@ export function NewService() {
     } catch (err) {
       formConsultLawyer.reset()
 
-      setIsNameResponse(isNameResponse)
+      setIsNameResponse('')
 
       if (isAxiosError(err)) {
         setIsMessageErrorApi(err.response?.data.message)
@@ -286,8 +286,9 @@ export function NewService() {
             />
 
             {isNameResponse && (
-              <Alert className="rounded border border-emerald-800  bg-emerald-50 text-emerald-800 p-2">
-                <AlertTitle className="font-medium text-center">
+              <Alert className="rounded-full bg-emerald-600 text-slate-50 p-1">
+                <AlertTitle className="flex items-center justify-center gap-1.5 font-bold text-center">
+                  <UserCheck className="size-4 font-bold" />
                   {formatFullName(isNameResponse)}
                 </AlertTitle>
               </Alert>
@@ -304,7 +305,7 @@ export function NewService() {
                   className="rounded border border-amber-800 bg-amber-50 text-amber-800"
                 >
                   <InfoIcon />
-                  <AlertDescription className="text-sm text-justify">
+                  <AlertDescription className="text-sm font-medium text-justify">
                     {isMessageErrorApi}
                   </AlertDescription>
                 </Alert>
