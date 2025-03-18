@@ -18,13 +18,13 @@ export default async function DashboardPage() {
       <Separator orientation="horizontal" />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <TotalServicesCard />
-
-        <AnnualServicesCard />
+        <EmployeeServicesCard idAgentAuthenticated={idAgentAuthenticated} />
 
         <MonthlyServicesCard />
 
-        <EmployeeServicesCard idAgentAuthenticated={idAgentAuthenticated} />
+        <AnnualServicesCard />
+
+        <TotalServicesCard />
       </div>
 
       <div className="grid grid-cols-9 gap-4">
