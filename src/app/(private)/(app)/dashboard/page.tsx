@@ -4,8 +4,11 @@ import { EmployeeServicesCard } from './components/employee-services-card'
 import { MonthlyServicesCard } from './components/monthly-services-card'
 import { ServiceChart } from './components/service-chart'
 import { TotalServicesCard } from './components/total-services-card'
+import { getIsAgentAuthenticated } from '@/auth'
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const idAgentAuthenticated = await getIsAgentAuthenticated()
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-3xl font-calsans font-bold tracking-tight">
@@ -21,7 +24,7 @@ export default function DashboardPage() {
 
         <MonthlyServicesCard />
 
-        <EmployeeServicesCard />
+        <EmployeeServicesCard idAgentAuthenticated={idAgentAuthenticated} />
       </div>
 
       <div className="grid grid-cols-9 gap-4">

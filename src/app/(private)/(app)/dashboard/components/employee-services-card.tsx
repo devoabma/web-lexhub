@@ -1,7 +1,57 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users } from 'lucide-react'
+'use client'
 
-export function EmployeeServicesCard() {
+import { getAllQuantityByAgent } from '@/api/dashboard/get-all-quantity-by-agent'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { is, ptBR } from 'date-fns/locale'
+import { useQuery } from '@tanstack/react-query'
+import { Users } from 'lucide-react'
+import { subMonths, format } from 'date-fns'
+import { getProfile } from '@/api/agents/get-profile'
+import { Skeleton } from '@/components/ui/skeleton'
+
+interface EmployeeServicesCardProps {
+  idAgentAuthenticated: string | false
+}
+
+export function EmployeeServicesCard({
+  idAgentAuthenticated,
+}: EmployeeServicesCardProps) {
+  const { data: totalByAgent, isLoading: isTotalByAgentLoading } = useQuery({
+    queryKey: ['metrics', 'services-by-agent', idAgentAuthenticated],
+    queryFn: () => getAllQuantityByAgent({ id: idAgentAuthenticated }),
+  })
+
+  const { data: profile, isLoading: isProfileLoading } = useQuery({
+    queryKey: ['metrics', 'get-profile'],
+    queryFn: getProfile,
+  })
+
+  // Busca o mês atual
+  const currentMonth = format(new Date(), 'MMMM', { locale: ptBR })
+  // Capitaliza a primeira letra
+  const currentMonthFormatted =
+    currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1)
+
+  // Busca o mês passado para comparação de crescimento
+  const lastMonth = format(subMonths(new Date(), 1), 'MMMM', { locale: ptBR })
+  // Capitaliza a primeira letra
+  const lastMonthFormatted =
+    lastMonth.charAt(0).toUpperCase() + lastMonth.slice(1)
+
+  // Define valores padrão para evitar erros
+  const totalGeneral = totalByAgent?.totalGeneral ?? 0
+  const totalCurrentMonth = totalByAgent?.totalOnMonth ?? 0
+  const totalPreviousMonth = totalByAgent?.totalOnPreviousMonth ?? 0
+
+  // Calcula a variação do mês de forma segura
+  let variationMonth = 0
+  if (totalPreviousMonth > 0) {
+    variationMonth =
+      ((totalCurrentMonth - totalPreviousMonth) / totalPreviousMonth) * 100
+  } else if (totalCurrentMonth > 0) {
+    variationMonth = 100 // Se não houver registros no mẽs anterior, considera 100% de crescimento
+  }
+
   return (
     <Card className="rounded-2xl shadow-2xl backdrop-blur-lg bg-slate-800/60 border border-slate-700 transition-transform transform hover:scale-105">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -11,23 +61,74 @@ export function EmployeeServicesCard() {
         <Users className="size-5 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <p className="text-base font-semibold text-white mb-2">
-          Hilquias Ferreira Melo
-        </p>
-        <div className="text-3xl font-bold text-white font-calsans">324</div>
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          <div>
-            <p className="text-xs font-medium text-muted-foreground">Março</p>
-            <p className="text-sm text-white">120</p>
+        <div className="text-base font-semibold text-white mb-2">
+          {isProfileLoading ? (
+            <Skeleton className="h-4 w-72 rounded-full" />
+          ) : (
+            profile?.agent.name
+          )}
+        </div>
+
+        {isTotalByAgentLoading ? (
+          <Skeleton className="h-10 w-10 rounded" />
+        ) : (
+          <div className="text-3xl font-bold text-white font-calsans">
+            {totalGeneral.toLocaleString('pt-BR', {
+              minimumIntegerDigits: 2,
+              useGrouping: false,
+            })}
           </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-2">
           <div>
-            <p className="text-xs font-medium text-muted-foreground">
-              Fevereiro
-            </p>
-            <div className="flex items-center">
-              <span className="text-sm text-white">104</span>
-              <span className="text-xs ml-1 text-green-400">+15.4%</span>
-            </div>
+            {isTotalByAgentLoading ? (
+              <Skeleton className="h-3 w-10 rounded-full mt-2" />
+            ) : (
+              <p className="text-sm font-medium text-muted-foreground">
+                {currentMonthFormatted}
+              </p>
+            )}
+
+            {isTotalByAgentLoading ? (
+              <Skeleton className="h-3 w-20 rounded-full mt-2" />
+            ) : (
+              <div className="flex items-center">
+                <span className="text-sm text-white">
+                  {totalCurrentMonth.toLocaleString('pt-BR', {
+                    minimumIntegerDigits: 2,
+                    useGrouping: false,
+                  })}
+                </span>
+                <span
+                  className={`text-sm ml-2 ${variationMonth >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                >
+                  {variationMonth >= 0 ? '+' : '-'}
+                  {variationMonth.toFixed(2)}%
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            {isTotalByAgentLoading ? (
+              <Skeleton className="h-3 w-14 rounded-full mt-2" />
+            ) : (
+              <p className="text-sm font-medium text-muted-foreground">
+                {lastMonthFormatted}
+              </p>
+            )}
+
+            {isTotalByAgentLoading ? (
+              <Skeleton className="h-3 w-8 rounded-full mt-2" />
+            ) : (
+              <span className="text-sm text-white">
+                {totalPreviousMonth.toLocaleString('pt-BR', {
+                  minimumIntegerDigits: 2,
+                  useGrouping: false,
+                })}
+              </span>
+            )}
           </div>
         </div>
       </CardContent>
