@@ -287,7 +287,7 @@ export function NewService() {
 
             {isNameResponse && (
               <Alert className="rounded-full bg-emerald-600 text-slate-50 p-1">
-                <AlertTitle className="flex items-center justify-center gap-1.5 font-bold text-center">
+                <AlertTitle className="flex items-center justify-center gap-1.5 font-bold tracking-wide text-center">
                   <UserCheck className="size-4 font-bold" />
                   {formatFullName(isNameResponse)}
                 </AlertTitle>

@@ -3,7 +3,6 @@ import { API } from '@/lib/axios'
 interface CreateServiceProps {
   oab: string
   name: string
-  cpf: string
   email: string
   serviceTypeId: string[]
   assistance: string
@@ -13,7 +12,6 @@ interface CreateServiceProps {
 export async function createServiceExternal({
   oab,
   name,
-  cpf,
   email,
   serviceTypeId,
   assistance,
@@ -22,7 +20,6 @@ export async function createServiceExternal({
   await API.post('/services/external', {
     oab,
     name,
-    cpf,
     email,
     serviceTypeId,
     assistance,

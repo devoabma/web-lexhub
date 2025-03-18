@@ -24,7 +24,6 @@ interface ServiceTableRowProps {
     lawyer: {
       id: string
       name: string
-      cpf: string
       oab: string
       email: string
     }

@@ -36,7 +36,6 @@ interface ServiceDetailsProps {
     lawyer: {
       id: string
       name: string
-      cpf: string
       oab: string
       email: string
     }
@@ -187,9 +186,11 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
             <span>Observação</span>
           </div>
           <div className="pl-6 bg-muted/50 p-3 rounded">
-            <p className="text-sm">
+            <p
+              className={`text-sm ${services.observation === '' && 'text-muted-foreground'}`}
+            >
               {services.observation === ''
-                ? 'Nenhuma observação informada.'
+                ? 'Nenhuma observação adicionada'
                 : services.observation}
             </p>
           </div>

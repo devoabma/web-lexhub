@@ -62,9 +62,6 @@ const newServiceExternalFormSchema = z.object({
   name: z.string().min(1, {
     message: 'O nome do advogado(a) é obrigatório',
   }),
-  cpf: z.string().min(1, {
-    message: 'O número do CPF é obrigatório',
-  }),
   email: z.string().email({
     message: 'O e-mail é obrigatório',
   }),
@@ -89,7 +86,6 @@ export function NewServiceExternal() {
     defaultValues: {
       oab: '',
       name: '',
-      cpf: '',
       email: '',
       serviceTypeId: [],
       observation: '',
@@ -122,7 +118,6 @@ export function NewServiceExternal() {
       await createServiceExternalFn({
         oab: data.oab,
         name: data.name,
-        cpf: data.cpf,
         email: data.email,
         serviceTypeId: selectedServiceTypes,
         observation: data.observation,
@@ -203,34 +198,6 @@ export function NewServiceExternal() {
                   <FormLabel>Nome completo</FormLabel>
                   <FormControl>
                     <Input {...field} className="rounded" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="cpf"
-              render={({
-                field: { onChange, ...field },
-                formState: { errors },
-              }) => (
-                <FormItem>
-                  <FormLabel>Número de CPF</FormLabel>
-                  <FormControl>
-                    <PatternFormat
-                      format="###.###.###-##"
-                      name={field.name}
-                      value={field.value}
-                      onValueChange={values => {
-                        onChange(values.value)
-                      }}
-                      defaultValue=""
-                      autoComplete="off"
-                      allowEmptyFormatting={false}
-                      data-error={Boolean(errors.cpf)}
-                      className="flex h-9 w-full rounded border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[error=true]:border-red-600 data-[error=true]:focus-visible:ring-0"
-                    />
                   </FormControl>
                 </FormItem>
               )}
