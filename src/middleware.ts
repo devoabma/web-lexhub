@@ -10,7 +10,7 @@ const publicRoutes = [
 const adminRoutes = [
   { path: '/services-types', whenAuthenticated: 'redirect' },
   { path: '/agents', whenAuthenticated: 'redirect' },
-  { path: '/services', whenAuthenticated: 'redirect' },
+  { path: '/services', whenAuthenticated: 'next' },
 ] as const
 
 // Redireciona o usuário caso ele acesse uma rota privada sem estar logado

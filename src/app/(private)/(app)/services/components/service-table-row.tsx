@@ -12,6 +12,7 @@ import { useState } from 'react'
 import { CancelService } from './cancel-service'
 import { FinishedService } from './finished-service'
 import { ServiceDetails } from './service-details'
+import { getIsAgentAuthenticated } from '@/auth'
 
 interface ServiceTableRowProps {
   services: {
@@ -40,11 +41,18 @@ interface ServiceTableRowProps {
       }
     }[]
   }
+  idAgentAuthenticated: string | false
 }
 
-export function ServiceTableRow({ services }: ServiceTableRowProps) {
+export function ServiceTableRow({
+  services,
+  idAgentAuthenticated,
+}: ServiceTableRowProps) {
   const [isFinishedDialogOpen, setIsFinishedDialogOpen] = useState(false)
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
+
+  // Verifica se o atendimento pertence ao funcionário logado
+  const employeeService = services.agent.id === idAgentAuthenticated
 
   return (
     <TableRow
@@ -123,6 +131,7 @@ export function ServiceTableRow({ services }: ServiceTableRowProps) {
               <Button
                 variant="outline"
                 size="sm"
+                disabled={!employeeService}
                 className="rounded flex items-center cursor-pointer"
               >
                 <CheckCircle className="size-3.5 text-yellow-600" />
@@ -155,8 +164,8 @@ export function ServiceTableRow({ services }: ServiceTableRowProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="rounded flex items-center cursor-pointer disabled:opacity-100"
-              disabled={services.status === 'COMPLETED'}
+              className={`rounded flex items-center cursor-pointer ${!employeeService && 'disabled:opacity-50'}`}
+              disabled={!employeeService || services.status === 'COMPLETED'}
             >
               <CircleX className="size-3.5 text-rose-800" />
               Cancelar

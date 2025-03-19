@@ -16,7 +16,10 @@ import { z } from 'zod'
 import { ServiceTableFilters } from './service-table-filters'
 import { ServiceTableRow } from './service-table-row'
 
-export function ServicesList() {
+interface ServicesListProps {
+  idAgentAuthenticated: string | false
+}
+export function ServicesList({ idAgentAuthenticated }: ServicesListProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -96,7 +99,13 @@ export function ServicesList() {
           {/* FIXME: Componente Service Table Row */}
           <TableBody className="border-b">
             {results?.services.map(service => {
-              return <ServiceTableRow key={service.id} services={service} />
+              return (
+                <ServiceTableRow
+                  key={service.id}
+                  services={service}
+                  idAgentAuthenticated={idAgentAuthenticated}
+                />
+              )
             })}
           </TableBody>
         </Table>
