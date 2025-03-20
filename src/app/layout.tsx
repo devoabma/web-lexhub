@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${inter.variable} antialiased`}>
       <body>
         <ClientProvider>{children}</ClientProvider>
-        <Toaster richColors closeButton theme="dark" duration={9000} />
+        <Toaster richColors closeButton theme="dark" />
       </body>
     </html>
   )

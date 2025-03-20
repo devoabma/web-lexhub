@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useQuery } from '@tanstack/react-query'
 
 import {
@@ -21,7 +22,7 @@ import {
 } from 'recharts'
 
 export function ServiceChart() {
-  const { data: servicesInMonth } = useQuery({
+  const { data: servicesInMonth, isLoading } = useQuery({
     queryKey: ['metrics', 'services-month-for-chart'],
     queryFn: getServicesMonthForChart,
   })
@@ -37,30 +38,36 @@ export function ServiceChart() {
         </div>
       </CardHeader>
 
-      <CardContent>
-        <ResponsiveContainer width="100%" height={240}>
-          <LineChart data={servicesInMonth} style={{ fontSize: 12 }}>
-            <YAxis
-              stroke="#888"
-              tickLine={false}
-              axisLine={false}
-              width={80}
-              tickFormatter={value => `${value} Atend.`}
-            />
+      {isLoading ? (
+        <CardContent className="h-[300px]">
+          <Skeleton className="h-full w-full bg-muted-foreground/5 rounded-2xl" />
+        </CardContent>
+      ) : (
+        <CardContent>
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={servicesInMonth} style={{ fontSize: 12 }}>
+              <YAxis
+                stroke="#888"
+                tickLine={false}
+                axisLine={false}
+                width={80}
+                tickFormatter={value => `${value} Atend.`}
+              />
 
-            <XAxis dataKey="data" tickLine={false} axisLine={false} dy={16} />
+              <XAxis dataKey="data" tickLine={false} axisLine={false} dy={16} />
 
-            <CartesianGrid vertical={false} className="stroke-muted" />
+              <CartesianGrid vertical={false} className="stroke-muted" />
 
-            <Line
-              type="linear"
-              dataKey="services"
-              stroke="#0284c7"
-              strokeWidth={2}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </CardContent>
+              <Line
+                type="linear"
+                dataKey="services"
+                stroke="#0284c7"
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      )}
     </Card>
   )
 }

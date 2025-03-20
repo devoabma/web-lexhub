@@ -76,7 +76,7 @@ export function TypesTableFilters() {
                 <Input
                   {...field}
                   placeholder="Identificador"
-                  className="h-8 w-80 rounded"
+                  className="h-8 w-72 max-md:w-80 rounded"
                 />
               </FormControl>
             </FormItem>
@@ -92,7 +92,7 @@ export function TypesTableFilters() {
                 <Input
                   {...field}
                   placeholder="Nome do Serviço"
-                  className="h-8 w-xl rounded"
+                  className="h-8 w-xl max-md:w-80 rounded"
                 />
               </FormControl>
             </FormItem>

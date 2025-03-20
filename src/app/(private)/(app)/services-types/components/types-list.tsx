@@ -56,10 +56,10 @@ export function ServicesTypesList() {
           )}
 
           <TableHeader>
-            <TableRow className="overflow-x-auto">
-              <TableHead className="w-28">Identificador</TableHead>
-              <TableHead className="w-96">Nome do Serviço</TableHead>
-              <TableHead className="w-28 text-center" />
+            <TableRow>
+              <TableHead className="w-18">Identificador</TableHead>
+              <TableHead className="w-18">Nome do Serviço</TableHead>
+              <TableHead className="w-18 text-center" />
             </TableRow>
           </TableHeader>
 

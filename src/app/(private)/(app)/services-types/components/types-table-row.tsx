@@ -21,13 +21,13 @@ export function ServicesTypesTableRow({
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   return (
-    <TableRow key={serviceTypes.id} className="overflow-x-auto">
+    <TableRow key={serviceTypes.id} className="">
       <TableCell className="relative font-mono text-xs font-medium border-r">
         {serviceTypes.id}
         <CopyContentField value={serviceTypes.id} />
       </TableCell>
 
-      <TableCell className="relative font-medium truncate max-w-xs border-r">
+      <TableCell className="relative font-medium truncate border-r">
         {serviceTypes.name}
         <CopyContentField value={serviceTypes.name} />
       </TableCell>

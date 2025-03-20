@@ -94,7 +94,7 @@ export function ServiceTableFilters() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFilterServices)}
-        className="flex items-center gap-2"
+        className="flex flex-wrap items-center gap-2"
       >
         <span className="text-sm font-semibold">Filtros:</span>
 
@@ -102,12 +102,12 @@ export function ServiceTableFilters() {
           control={form.control}
           name="oab"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full sm:w-auto">
               <FormControl>
                 <Input
                   {...field}
                   placeholder="Número OAB"
-                  className="h-8 w-36 rounded"
+                  className="h-8 w-full sm:w-36 rounded"
                 />
               </FormControl>
             </FormItem>
@@ -118,12 +118,12 @@ export function ServiceTableFilters() {
           control={form.control}
           name="lawyerName"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full sm:w-auto">
               <FormControl>
                 <Input
                   {...field}
                   placeholder="Nome do advogado(a)"
-                  className="h-8 w-[350px] rounded"
+                  className="h-8 w-full sm:w-[350px] rounded"
                 />
               </FormControl>
             </FormItem>
@@ -134,12 +134,12 @@ export function ServiceTableFilters() {
           control={form.control}
           name="agentName"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full sm:w-auto">
               <FormControl>
                 <Input
                   {...field}
                   placeholder="Funcionário(a)"
-                  className="h-8 w-[350px] rounded"
+                  className="h-8 w-full sm:w-[350px] rounded"
                 />
               </FormControl>
             </FormItem>
@@ -150,10 +150,10 @@ export function ServiceTableFilters() {
           control={form.control}
           name="status"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full sm:w-auto">
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="h-8 w-36 rounded">
+                  <SelectTrigger className="h-8 w-full sm:w-36 rounded">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                 </FormControl>
@@ -172,10 +172,10 @@ export function ServiceTableFilters() {
           control={form.control}
           name="assistance"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-full sm:w-auto">
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="h-8 w-36 rounded">
+                  <SelectTrigger className="h-8 w-full sm:w-36 rounded">
                     <SelectValue placeholder="Atendimento" />
                   </SelectTrigger>
                 </FormControl>
@@ -190,25 +190,27 @@ export function ServiceTableFilters() {
           )}
         />
 
-        <Button
-          type="submit"
-          size="sm"
-          className="cursor-pointer rounded bg-sky-700 hover:bg-sky-600 text-white"
-        >
-          <Search className="size-4" />
-          Filtrar resultados
-        </Button>
+        <div className="flex w-full sm:w-auto gap-2">
+          <Button
+            type="submit"
+            size="sm"
+            className="w-full sm:w-auto cursor-pointer rounded bg-sky-700 hover:bg-sky-600 text-white flex items-center gap-2"
+          >
+            <Search className="size-4" />
+            Filtrar resultados
+          </Button>
 
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          className="cursor-pointer rounded"
-          onClick={handleClearFilters}
-        >
-          <X className="size-4" />
-          Remover filtros
-        </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="w-full sm:w-auto cursor-pointer rounded flex items-center gap-2"
+            onClick={handleClearFilters}
+          >
+            <X className="size-4" />
+            Remover filtros
+          </Button>
+        </div>
       </form>
     </Form>
   )

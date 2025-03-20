@@ -76,7 +76,7 @@ export function FormAuth() {
   }
 
   return (
-    <Card className="border-0 shadow-xl backdrop-blur-sm">
+    <Card className="border-0 w-full max-md:w-[27rem] lg:w-[28rem] shadow-xl backdrop-blur-sm">
       <CardContent>
         <form className="space-y-6" onSubmit={handleSubmit(handleLogin)}>
           <div className="space-y-4">

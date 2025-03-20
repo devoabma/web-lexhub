@@ -110,6 +110,11 @@
   width: 8px !important;
 }
 
+/* Scrollbar horizontal */
+::-webkit-scrollbar:horizontal {
+  height: 8px !important; /* Altura da scrollbar inferior */
+}
+
 /* Fundo da scrollbar */
 ::-webkit-scrollbar-track {
   background: #1e293b !important; /* Slate-800 */

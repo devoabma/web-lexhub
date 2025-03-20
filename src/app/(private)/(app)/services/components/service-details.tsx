@@ -23,6 +23,8 @@ import {
   Monitor,
   User,
   UserCog,
+  X,
+  XCircle,
 } from 'lucide-react'
 
 interface ServiceDetailsProps {
@@ -138,8 +140,14 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
                 OAB: {services.lawyer.oab}
               </p>
               <p className="text-sm inline-flex items-center gap-1.5 text-muted-foreground">
-                <Mail className="size-4" />
-                {services.lawyer.email}
+                {services.lawyer.email ? (
+                  <Mail className="size-4" />
+                ) : (
+                  <X className="size-4" />
+                )}
+                {services.lawyer.email
+                  ? services.lawyer.email
+                  : 'Sem e-mail cadastrado'}
               </p>
             </div>
           </div>

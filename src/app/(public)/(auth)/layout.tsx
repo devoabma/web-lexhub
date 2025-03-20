@@ -29,7 +29,7 @@ export default function AuthLayout({
             />
           </Link>
 
-          <h1 className="flex font-calsans gap-2 justify-center text-base font-semibold md:text-lg lg:text-4xl text-foreground/90 hover:text-foreground transition-colors duration-300">
+          <h1 className="font-calsans text-base font-semibold md:text-lg lg:text-3xl">
             OAB Atende
           </h1>
         </div>
