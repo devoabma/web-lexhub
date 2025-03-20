@@ -55,9 +55,7 @@ export function ServiceTableRow({
   const employeeService = services.agent.id === idAgentAuthenticated
 
   return (
-    <TableRow
-      className={`overflow-x-auto ${services.status === 'COMPLETED' && 'opacity-50'}`}
-    >
+    <TableRow className="overflow-x-auto">
       <TableCell className="w-full border-r sm:w-auto">
         <Dialog>
           <DialogTrigger asChild>
@@ -85,7 +83,7 @@ export function ServiceTableRow({
         ) : (
           <div className="flex items-center gap-2">
             <span className="block h-2 w-2 rounded-full bg-rose-500" />
-            <span className="text-xs font-medium">Concluído</span>
+            <span className="text-xs font-medium">Encerrado</span>
           </div>
         )}
       </TableCell>
@@ -142,7 +140,7 @@ export function ServiceTableRow({
                 variant="ghost"
                 size="sm"
                 disabled={services.status === 'COMPLETED'}
-                className="rounded flex items-center cursor-pointer disabled:opacity-100"
+                className="rounded flex items-center cursor-pointer"
               >
                 <CheckCircle className="size-3.5 text-emerald-600" />
                 Concluído
@@ -164,7 +162,7 @@ export function ServiceTableRow({
             <Button
               variant="ghost"
               size="sm"
-              className={`rounded flex items-center cursor-pointer ${!employeeService && 'disabled:opacity-50'}`}
+              className="rounded flex items-center cursor-pointer"
               disabled={!employeeService || services.status === 'COMPLETED'}
             >
               <CircleX className="size-3.5 text-rose-800" />

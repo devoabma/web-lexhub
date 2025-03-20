@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { KeyRound, LoaderCircle, UserRoundPlus } from 'lucide-react'
+import { ArrowRight, KeyRound, LoaderCircle, UserRoundPlus } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -186,7 +186,7 @@ export function ResetPasswordForm({ code }: ResetPasswordFormProps) {
             <Button
               type="submit"
               disabled={isResetting}
-              className="bg-sky-700 w-full hover:bg-sky-600 text-white cursor-pointer rounded"
+              className="bg-sky-700 w-full group hover:bg-sky-600 text-white cursor-pointer rounded"
             >
               {isResetting ? (
                 <>
@@ -195,8 +195,8 @@ export function ResetPasswordForm({ code }: ResetPasswordFormProps) {
                 </>
               ) : (
                 <>
-                  <UserRoundPlus className="size-4" />
                   Redefinir senha
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </>
               )}
             </Button>
