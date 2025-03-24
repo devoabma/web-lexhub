@@ -83,7 +83,9 @@ export function middleware(request: NextRequest) {
 
       const response = NextResponse.redirect(redirectUrl)
 
-      response.cookies.delete('@lexhub-auth')
+      console.log(response)
+
+      // response.cookies.delete('@lexhub-auth')
 
       return response
     }
