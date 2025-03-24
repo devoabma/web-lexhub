@@ -36,9 +36,10 @@ export function middleware(request: NextRequest) {
   if (!authToken && !publicRoute) {
     const redirectUrl = request.nextUrl.clone()
 
-    redirectUrl.pathname = REDIRECT_WHEN_NOT_LOGGED_IN
+    const response = NextResponse.redirect(redirectUrl)
+    response.cookies.set('@lexhub-auth', '', { path: '/', maxAge: 0 }) // Remove o cookie para garantir
 
-    return NextResponse.redirect(redirectUrl)
+    return response
   }
 
   // Se o usuário estiver logado e a rota for publica, ele deve ser redirecionado para a rota privada
