@@ -27,6 +27,9 @@ export function middleware(request: NextRequest) {
 
   const authToken = request.cookies.get('@lexhub-auth')
 
+  console.log('🔍 Path:', path)
+  console.log('🔑 Token encontrado:', authToken)
+
   // Se o usuário não estiver logado e a rota for publica, ele pode acessar
   if (!authToken && publicRoute) {
     return NextResponse.next()
@@ -85,7 +88,7 @@ export function middleware(request: NextRequest) {
 
       console.log(response)
 
-      // response.cookies.delete('@lexhub-auth')
+      response.cookies.delete('@lexhub-auth')
 
       return response
     }
