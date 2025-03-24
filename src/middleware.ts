@@ -25,10 +25,7 @@ export function middleware(request: NextRequest) {
   const publicRoute = publicRoutes.find(route => route.path === path)
   const adminRoute = adminRoutes.find(route => route.path === path)
 
-  const authToken = request.cookies.get('@lexhub-auth')
-
-  console.log('🔍 Path:', path)
-  console.log('🔑 Token encontrado:', authToken)
+  const authToken = request.cookies.get('@lexhub-auth')?.value
 
   // Se o usuário não estiver logado e a rota for publica, ele pode acessar
   if (!authToken && publicRoute) {
@@ -63,7 +60,7 @@ export function middleware(request: NextRequest) {
     adminRoutes &&
     adminRoute?.whenAuthenticated === 'redirect'
   ) {
-    const token: JWTTokenProps = jwtDecode(authToken.value)
+    const token: JWTTokenProps = jwtDecode(authToken)
 
     if (token.role !== 'ADMIN') {
       const redirectUrl = request.nextUrl.clone()
@@ -75,24 +72,24 @@ export function middleware(request: NextRequest) {
   }
 
   // Se o usuário estiver logado e a rota for privada, so acessará se o token estiver valido
-  // if (authToken && !publicRoute) {
-  //   const token = jwtDecode(authToken.value)
+  if (authToken && !publicRoute) {
+    const token = jwtDecode(authToken)
 
-  //   if (token.exp && token.exp * 1000 < Date.now()) {
-  //     // Remove o cookie de autenticação se o token estiver expirado
-  //     const redirectUrl = request.nextUrl.clone()
+    if (token.exp && token.exp * 1000 < Date.now()) {
+      // Remove o cookie de autenticação se o token estiver expirado
+      const redirectUrl = request.nextUrl.clone()
 
-  //     redirectUrl.pathname = REDIRECT_WHEN_NOT_LOGGED_IN
+      redirectUrl.pathname = REDIRECT_WHEN_NOT_LOGGED_IN
 
-  //     const response = NextResponse.redirect(redirectUrl)
+      const response = NextResponse.redirect(redirectUrl)
 
-  //     response.cookies.delete('@lexhub-auth')
+      response.cookies.delete('@lexhub-auth')
 
-  //     return response
-  //   }
+      return response
+    }
 
-  //   return NextResponse.next()
-  // }
+    return NextResponse.next()
+  }
 
   return NextResponse.next()
 }
