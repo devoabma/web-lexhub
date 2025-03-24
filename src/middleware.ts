@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
   const publicRoute = publicRoutes.find(route => route.path === path)
   const adminRoute = adminRoutes.find(route => route.path === path)
 
-  const authToken = request.cookies.get('@lexhub-auth')?.value
+  const authToken = request.cookies.get('@lexhub-auth')
 
   // Se o usuário não estiver logado e a rota for publica, ele pode acessar
   if (!authToken && publicRoute) {
@@ -60,7 +60,7 @@ export function middleware(request: NextRequest) {
     adminRoutes &&
     adminRoute?.whenAuthenticated === 'redirect'
   ) {
-    const token: JWTTokenProps = jwtDecode(authToken)
+    const token: JWTTokenProps = jwtDecode(authToken.value)
 
     if (token.role !== 'ADMIN') {
       const redirectUrl = request.nextUrl.clone()
@@ -73,7 +73,7 @@ export function middleware(request: NextRequest) {
 
   // Se o usuário estiver logado e a rota for privada, so acessará se o token estiver valido
   if (authToken && !publicRoute) {
-    const token = jwtDecode(authToken)
+    const token = jwtDecode(authToken.value)
 
     if (token.exp && token.exp * 1000 < Date.now()) {
       // Remove o cookie de autenticação se o token estiver expirado
