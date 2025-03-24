@@ -106,5 +106,3 @@ export const config = {
     '/((?!api|_next/static|_next/image|fonts|favicon.ico|sitemap.xml|robots.txt).*)',
   ],
 }
-
-console.log('Middleware')
