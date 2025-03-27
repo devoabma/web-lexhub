@@ -54,7 +54,7 @@ export function FormAuth() {
 
       reset()
 
-      router.push('/dashboard')
+      router.replace('/dashboard')
     } catch (err) {
       // FIXME: Tratar erros vindo da API
       reset()
