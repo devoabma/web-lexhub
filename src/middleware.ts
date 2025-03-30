@@ -1,5 +1,6 @@
 import { jwtDecode } from 'jwt-decode'
 import { type NextRequest, NextResponse } from 'next/server'
+import { env } from './env'
 
 const publicRoutes = [
   { path: '/', whenAuthenticated: 'redirect' },
@@ -83,12 +84,24 @@ export function middleware(request: NextRequest) {
 
       const response = NextResponse.redirect(redirectUrl)
 
-      response.cookies.delete('@lexhub-auth')
+      response.cookies.delete('@lexhub-auth') // Apaga o cookie
 
       return response
     }
 
-    return NextResponse.next()
+    // Se o token é válido, você pode definir o cookie, caso necessário
+    const response = NextResponse.next()
+
+    response.cookies.set('@lexhub-auth', authToken.value, {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      domain: env.NEXT_PUBLIC_DOMAIN, // Dominio compartilhado
+      maxAge: 60 * 60 * 24, // 1 dia
+    })
+
+    return response
   }
 
   return NextResponse.next()
@@ -96,13 +109,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
     '/((?!api|_next/static|_next/image|fonts|favicon.ico|sitemap.xml|robots.txt).*)',
   ],
 }

@@ -5,9 +5,15 @@ interface SignInProps {
   password: string
 }
 
+interface SignInResponse {
+  token: string
+}
+
 export async function singIn({ email, password }: SignInProps) {
-  await API.post('/agents/sessions', {
+  const response = await API.post<SignInResponse>('/agents/sessions', {
     email,
     password,
   })
+
+  return response.data
 }

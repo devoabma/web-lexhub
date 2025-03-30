@@ -52,7 +52,7 @@ export function FormAuth() {
         description: 'Bem-vindo(a) à OAB Atende.',
       })
 
-      reset()
+      // reset()
 
       router.replace('/dashboard')
     } catch (err) {
