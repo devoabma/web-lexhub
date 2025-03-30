@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { AgentTableFilters } from './agent-table-filters'
 import { AgentTableRow } from './agent-table-row'
+import { AgentsTableSkeleton } from './agents-table-skeleton'
 
 export function AgentsList() {
   const searchParams = useSearchParams()
@@ -26,7 +27,7 @@ export function AgentsList() {
   const role = searchParams.get('role')
 
   // Query para pegar os funcionários
-  const { data: results } = useQuery({
+  const { data: results, isLoading } = useQuery({
     queryKey: ['agents', pageIndex, name, role],
     queryFn: () =>
       getAll({ pageIndex, name, role: role === 'ALL' ? null : role }),
@@ -70,6 +71,8 @@ export function AgentsList() {
 
           {/* FIXME: Componente Agent Table Row */}
           <TableBody>
+            {isLoading && <AgentsTableSkeleton />}
+
             {results?.agents.map(agent => {
               return <AgentTableRow key={agent.id} agents={agent} />
             })}

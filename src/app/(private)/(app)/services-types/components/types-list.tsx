@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { TypesTableFilters } from './types-table-filters'
 import { ServicesTypesTableRow } from './types-table-row'
+import { TypesTableSkeleton } from './types-table-skeleton'
 
 export function ServicesTypesList() {
   const searchParams = useSearchParams()
@@ -25,7 +26,7 @@ export function ServicesTypesList() {
   const id = searchParams.get('id')
   const name = searchParams.get('name')
 
-  const { data: results } = useQuery({
+  const { data: results, isLoading } = useQuery({
     queryKey: ['services-types', pageIndex, id, name],
     queryFn: () => getAll({ pageIndex, id, name }),
     staleTime: Number.POSITIVE_INFINITY,
@@ -64,6 +65,8 @@ export function ServicesTypesList() {
           </TableHeader>
 
           <TableBody>
+            {isLoading && <TypesTableSkeleton />}
+
             {results?.servicesTypes.map(serviceType => {
               return (
                 <ServicesTypesTableRow
