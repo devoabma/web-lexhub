@@ -45,6 +45,9 @@ export function Profile() {
       toast.success('Sessão encerrada com sucesso!', {
         description: 'Volte para plataforma quando quiser.',
       })
+
+      // replace => força o administrador a não voltar para o página anterior
+      router.replace('/?logout=true')
     } catch (err) {
       toast.error('Houve um erro ao se deslogar!', {
         description: 'Por favor, tente novamente.',
