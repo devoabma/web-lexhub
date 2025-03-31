@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { ServiceTableFilters } from './service-table-filters'
 import { ServiceTableRow } from './service-table-row'
+import { ServiceTableSkeleton } from './service-table-skeleton'
 
 interface ServicesListProps {
   idAgentAuthenticated: string | false
@@ -32,7 +33,7 @@ export function ServicesList({ idAgentAuthenticated }: ServicesListProps) {
   const status = searchParams.get('status')
 
   // FIXME: Query para pegar os atendimentos
-  const { data: results } = useQuery({
+  const { data: results, isLoading } = useQuery({
     queryKey: [
       'services',
       pageIndex,
@@ -98,6 +99,8 @@ export function ServicesList({ idAgentAuthenticated }: ServicesListProps) {
 
           {/* FIXME: Componente Service Table Row */}
           <TableBody className="border-b">
+            {isLoading && <ServiceTableSkeleton />}
+
             {results?.services.map(service => {
               return (
                 <ServiceTableRow

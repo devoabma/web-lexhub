@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { Loader, LogIn } from 'lucide-react'
+import { LoaderCircle, LogIn } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -127,7 +127,8 @@ export function FormAuth() {
           >
             {isSubmitting ? (
               <>
-                Validando credenciais <Loader className="size-5 animate-spin" />
+                Validando credenciais{' '}
+                <LoaderCircle className="size-5 animate-spin" />
               </>
             ) : (
               <>
