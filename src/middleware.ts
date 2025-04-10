@@ -19,6 +19,7 @@ const REDIRECT_WHEN_NOT_LOGGED_IN = '/'
 
 interface JWTTokenProps {
   role: 'ADMIN' | 'MEMBER'
+  exp: number
 }
 
 export function middleware(request: NextRequest) {
@@ -26,7 +27,26 @@ export function middleware(request: NextRequest) {
   const publicRoute = publicRoutes.find(route => route.path === path)
   const adminRoute = adminRoutes.find(route => route.path === path)
 
+  let token: JWTTokenProps | null = null
+
   const authToken = request.cookies.get('@lexhub-auth')
+
+  if (authToken) {
+    token = jwtDecode(authToken.value)
+
+    // Verifica se o token expirou
+    if (token && token.exp * 1000 < Date.now()) {
+      const redirectUrl = request.nextUrl.clone()
+
+      redirectUrl.pathname = REDIRECT_WHEN_NOT_LOGGED_IN
+
+      const response = NextResponse.redirect(redirectUrl)
+
+      response.cookies.delete('@lexhub-auth')
+
+      return response
+    }
+  }
 
   // Se o usuário não estiver logado e a rota for publica, ele pode acessar
   if (!authToken && publicRoute) {
@@ -61,9 +81,8 @@ export function middleware(request: NextRequest) {
     adminRoutes &&
     adminRoute?.whenAuthenticated === 'redirect'
   ) {
-    const token: JWTTokenProps = jwtDecode(authToken.value)
-
-    if (token.role !== 'ADMIN') {
+    // Verifica se o token contém o cargo de admin
+    if (token && token.role !== 'ADMIN') {
       const redirectUrl = request.nextUrl.clone()
 
       redirectUrl.pathname = '/dashboard'
@@ -74,21 +93,6 @@ export function middleware(request: NextRequest) {
 
   // Se o usuário estiver logado e a rota for privada, so acessará se o token estiver valido
   if (authToken && !publicRoute) {
-    const token = jwtDecode(authToken.value)
-
-    if (token.exp && token.exp * 1000 < Date.now()) {
-      // Remove o cookie de autenticação se o token estiver expirado
-      const redirectUrl = request.nextUrl.clone()
-
-      redirectUrl.pathname = REDIRECT_WHEN_NOT_LOGGED_IN
-
-      const response = NextResponse.redirect(redirectUrl)
-
-      response.cookies.delete('@lexhub-auth') // Apaga o cookie
-
-      return response
-    }
-
     // Se o token é válido, você pode definir o cookie, caso necessário
     const response = NextResponse.next()
 
@@ -97,7 +101,7 @@ export function middleware(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      domain: env.NEXT_PUBLIC_DOMAIN, // Dominio compartilhado
+      domain: env.NEXT_PUBLIC_DOMAIN,
       maxAge: 60 * 60 * 24, // 1 dia
     })
 
