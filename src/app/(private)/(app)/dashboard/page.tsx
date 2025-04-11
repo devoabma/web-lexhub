@@ -19,11 +19,8 @@ export default async function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <EmployeeServicesCard idAgentAuthenticated={idAgentAuthenticated} />
-
         <MonthlyServicesCard />
-
         <AnnualServicesCard />
-
         <TotalServicesCard />
       </div>
 

@@ -35,7 +35,7 @@ export function MonthlyServicesCard() {
   }
 
   return (
-    <Card className="rounded-2xl shadow-2xl backdrop-blur-lg bg-slate-800/60 border border-slate-700 transition-transform transform hover:scale-105">
+    <Card className="rounded-2xl shadow-2xl backdrop-blur-lg bg-slate-800/60 border border-slate-700 hover:border-sky-800 transition-colors">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-white">
           Atendimentos por Mês
@@ -57,14 +57,13 @@ export function MonthlyServicesCard() {
         {isLoading ? (
           <Skeleton className="h-4 w-64 rounded-full" />
         ) : (
-          <div className="flex items-center pt-1">
+          <div className="flex items-baseline pt-1">
             <span
-              className={`text-sm font-semibold ${
-                variationMonth >= 0 ? 'text-green-400' : 'text-red-400'
-              }`}
+              className={`text-xs ${variationMonth >= 0 ? 'text-green-400' : 'text-red-400'
+                }`}
             >
               {variationMonth >= 0 ? '+' : ''}
-              {variationMonth.toFixed(2)}%
+              {variationMonth}%
             </span>
             <span className="text-sm text-muted-foreground ml-1">
               vs {totalPreviousMonth} atendimento(s) em {lastMonthFormatted}

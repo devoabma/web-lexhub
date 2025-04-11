@@ -8,6 +8,7 @@ import { Users } from 'lucide-react'
 import { subMonths, format } from 'date-fns'
 import { getProfile } from '@/api/agents/get-profile'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@/components/ui/separator'
 
 interface EmployeeServicesCardProps {
   idAgentAuthenticated: string | false
@@ -53,7 +54,7 @@ export function EmployeeServicesCard({
   }
 
   return (
-    <Card className="rounded-2xl shadow-2xl backdrop-blur-lg bg-slate-800/60 border border-slate-700 transition-transform transform hover:scale-105">
+    <Card className="rounded-2xl shadow-2xl backdrop-blur-lg bg-slate-800/60 border border-slate-700 hover:border-sky-800 transition-colors">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-white">
           Atendimentos por Funcionário
@@ -61,7 +62,7 @@ export function EmployeeServicesCard({
         <Users className="size-5 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-base font-semibold text-white mb-2">
+        <div className="text-sm font-medium text-white mb-2">
           {isProfileLoading ? (
             <Skeleton className="h-4 w-72 rounded-full" />
           ) : (
@@ -72,7 +73,7 @@ export function EmployeeServicesCard({
         {isTotalByAgentLoading ? (
           <Skeleton className="h-10 w-10 rounded" />
         ) : (
-          <div className="text-3xl font-bold text-white font-calsans">
+          <div className="text-3xl text-white font-calsans">
             {totalGeneral.toLocaleString('pt-BR', {
               minimumIntegerDigits: 2,
               useGrouping: false,
@@ -80,7 +81,8 @@ export function EmployeeServicesCard({
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
+
+        <div className="flex items-center justify-end flex-wrap gap-10">
           <div>
             {isTotalByAgentLoading ? (
               <Skeleton className="h-3 w-10 rounded-full mt-2" />
@@ -93,18 +95,18 @@ export function EmployeeServicesCard({
             {isTotalByAgentLoading ? (
               <Skeleton className="h-3 w-20 rounded-full mt-2" />
             ) : (
-              <div className="flex items-center">
-                <span className="text-sm text-white">
+              <div className="flex items-baseline">
+                <span className="text-sm">
                   {totalCurrentMonth.toLocaleString('pt-BR', {
                     minimumIntegerDigits: 2,
                     useGrouping: false,
                   })}
                 </span>
                 <span
-                  className={`text-sm ml-2 ${variationMonth >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                  className={`text-xs ml-2 ${variationMonth >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}
                 >
                   {variationMonth >= 0 ? '+' : '-'}
-                  {variationMonth.toFixed(2)}%
+                  {variationMonth}%
                 </span>
               </div>
             )}
