@@ -55,12 +55,12 @@ import { isAxiosError } from 'axios'
 import { motion } from 'framer-motion'
 import {
   Check,
+  CheckCircle,
   ChevronsUpDown,
   CirclePlus,
   InfoIcon,
   LoaderCircle,
   SquarePen,
-  UserCheck,
   UserSearch,
 } from 'lucide-react'
 import { useState } from 'react'
@@ -286,9 +286,9 @@ export function NewService() {
             />
 
             {isNameResponse && (
-              <Alert className="rounded-full bg-emerald-600 text-slate-50 p-1">
-                <AlertTitle className="flex items-center justify-center gap-1.5 font-bold tracking-wide text-center">
-                  <UserCheck className="size-4 font-bold" />
+              <Alert className="rounded bg-emerald-600 p-1">
+                <AlertTitle className="flex items-center justify-center gap-1 text-black">
+                  <CheckCircle className="size-4" />
                   {formatFullName(isNameResponse)}
                 </AlertTitle>
               </Alert>
@@ -315,7 +315,7 @@ export function NewService() {
             <Button
               type="submit"
               disabled={isConsulting}
-              className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded w-full"
+              className="bg-sky-700 hover:bg-sky-600 text-slate-200 cursor-pointer rounded w-full"
             >
               {isConsulting ? (
                 <>
@@ -478,7 +478,7 @@ export function NewService() {
                   <Button
                     type="submit"
                     disabled={isCreating}
-                    className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
+                    className="bg-sky-700 hover:bg-sky-600 text-slate-200 cursor-pointer rounded"
                   >
                     {isCreating ? (
                       <>

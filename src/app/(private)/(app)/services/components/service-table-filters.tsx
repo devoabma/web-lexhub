@@ -107,7 +107,7 @@ export function ServiceTableFilters() {
                 <Input
                   {...field}
                   placeholder="Número OAB"
-                  className="h-8 w-full sm:w-36 rounded"
+                  className="h-8 w-full sm:w-36 text-sm rounded"
                 />
               </FormControl>
             </FormItem>
@@ -123,7 +123,7 @@ export function ServiceTableFilters() {
                 <Input
                   {...field}
                   placeholder="Nome do advogado(a)"
-                  className="h-8 w-full sm:w-[350px] rounded"
+                  className="h-8 w-full sm:w-[350px] text-sm rounded"
                 />
               </FormControl>
             </FormItem>
@@ -139,7 +139,7 @@ export function ServiceTableFilters() {
                 <Input
                   {...field}
                   placeholder="Funcionário(a)"
-                  className="h-8 w-full sm:w-[350px] rounded"
+                  className="h-8 w-full sm:w-[350px] text-sm rounded"
                 />
               </FormControl>
             </FormItem>
@@ -190,7 +190,7 @@ export function ServiceTableFilters() {
           )}
         />
 
-        <div className="flex w-full sm:w-auto gap-2">
+        <div className="flex w-full sm:w-auto max-sm:flex-col gap-2">
           <Button
             type="submit"
             size="sm"
