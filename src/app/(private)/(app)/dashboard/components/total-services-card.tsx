@@ -73,7 +73,7 @@ export function TotalServicesCard() {
                 <span
                   className={`text-xs ml-2 ${variationDay >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}
                 >
-                  {variationDay >= 0 ? '+' : '-'}
+                  {variationDay >= 0 ? '+' : ''}
                   {variationDay.toFixed(1)}%
                 </span>
               </div>
