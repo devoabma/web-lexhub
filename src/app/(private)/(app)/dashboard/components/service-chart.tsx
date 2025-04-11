@@ -51,7 +51,7 @@ export function ServiceChart() {
                 tickLine={false}
                 axisLine={false}
                 width={80}
-                tickFormatter={value => `${value} Atend.`}
+                tickFormatter={value => `${value}`}
               />
 
               <XAxis dataKey="data" tickLine={false} axisLine={false} dy={16} />
