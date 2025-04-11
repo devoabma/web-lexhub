@@ -59,7 +59,7 @@ export function MonthlyServicesCard() {
         ) : (
           <div className="flex items-baseline pt-1">
             <span
-              className={`text-xs ${variationMonth >= 0 ? 'text-green-400' : 'text-red-400'
+              className={`text-xs ${variationMonth >= 0 ? 'text-emerald-400' : 'text-red-400'
                 }`}
             >
               {variationMonth >= 0 ? '+' : ''}
