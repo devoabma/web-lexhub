@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { NewService } from './components/new-service'
 import { NewServiceExternal } from './components/new-service-external'
 import { ServicesList } from './components/services-list'
-import { getIsAgentAuthenticated } from '@/auth'
+import { checkAdminStatus, getIsAgentAuthenticated } from '@/auth'
 
 export const metadata: Metadata = {
   title: 'Atendimentos | OAB Atende',
@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 
 export default async function ServicesPage() {
   const idAgentAuthenticated = await getIsAgentAuthenticated()
+  const isAgentAdmin = await checkAdminStatus()
 
   return (
     <div className="flex flex-col gap-4">
@@ -31,7 +32,7 @@ export default async function ServicesPage() {
 
       <div className="space-y-2.5 mt-4">
         {/* FIXME: Componente que lista os atendimentos */}
-        <ServicesList idAgentAuthenticated={idAgentAuthenticated} />
+        <ServicesList idAgentAuthenticated={idAgentAuthenticated} isAgentAdmin={isAgentAdmin} />
       </div>
     </div>
   )

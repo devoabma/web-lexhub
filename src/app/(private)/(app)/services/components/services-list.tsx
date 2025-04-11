@@ -19,8 +19,9 @@ import { ServiceTableSkeleton } from './service-table-skeleton'
 
 interface ServicesListProps {
   idAgentAuthenticated: string | false
+  isAgentAdmin: boolean
 }
-export function ServicesList({ idAgentAuthenticated }: ServicesListProps) {
+export function ServicesList({ idAgentAuthenticated, isAgentAdmin }: ServicesListProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -107,6 +108,7 @@ export function ServicesList({ idAgentAuthenticated }: ServicesListProps) {
                   key={service.id}
                   services={service}
                   idAgentAuthenticated={idAgentAuthenticated}
+                  isAgentAdmin={isAgentAdmin}
                 />
               )
             })}

@@ -42,11 +42,13 @@ interface ServiceTableRowProps {
     }[]
   }
   idAgentAuthenticated: string | false
+  isAgentAdmin: boolean
 }
 
 export function ServiceTableRow({
   services,
   idAgentAuthenticated,
+  isAgentAdmin,
 }: ServiceTableRowProps) {
   const [isFinishedDialogOpen, setIsFinishedDialogOpen] = useState(false)
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
@@ -91,16 +93,16 @@ export function ServiceTableRow({
       <TableCell className="text-center border-r">
         {services.status === 'OPEN'
           ? formatDistanceToNow(new Date(services.createdAt), {
+            addSuffix: true,
+            locale: ptBR,
+          })
+          : formatDistanceToNow(
+            (services.finishedAt && new Date(services.finishedAt)) as Date,
+            {
               addSuffix: true,
               locale: ptBR,
-            })
-          : formatDistanceToNow(
-              (services.finishedAt && new Date(services.finishedAt)) as Date,
-              {
-                addSuffix: true,
-                locale: ptBR,
-              }
-            )}
+            }
+          )}
       </TableCell>
 
       <TableCell className="font-mono text-xs font-medium text-center border-r">
@@ -129,7 +131,7 @@ export function ServiceTableRow({
               <Button
                 variant="outline"
                 size="sm"
-                disabled={!employeeService}
+                disabled={!employeeService && !isAgentAdmin}
                 className="rounded flex items-center cursor-pointer"
               >
                 <CheckCircle className="size-3.5 text-yellow-600" />
@@ -163,7 +165,7 @@ export function ServiceTableRow({
               variant="ghost"
               size="sm"
               className="rounded flex items-center cursor-pointer"
-              disabled={!employeeService || services.status === 'COMPLETED'}
+              disabled={!employeeService && !isAgentAdmin || services.status === 'COMPLETED'}
             >
               <CircleX className="size-3.5 text-rose-800" />
               Cancelar
