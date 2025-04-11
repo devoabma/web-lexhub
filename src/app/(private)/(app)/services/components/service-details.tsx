@@ -70,7 +70,7 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
   })
 
   return (
-    <DialogContent className="sm:max-w-md md:max-w-lg overflow-y-auto px-4 rounded">
+    <DialogContent className="max-w-md md:max-w-3xl overflow-y-auto px-4 rounded">
       <DialogHeader className="mt-4">
         <div className="flex items-center justify-between">
           <DialogTitle className="text-xl font-calsans font-bold">
@@ -83,7 +83,7 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
             {services.status === 'COMPLETED' ? 'Concluído' : 'Em andamento'}
           </Badge>
         </div>
-        <DialogDescription className="font-mono tracking-tight">
+        <DialogDescription className="font-mono text-left text-xs tracking-tight">
           ID: {services.id}
         </DialogDescription>
       </DialogHeader>
@@ -113,18 +113,20 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
             </p>
           </div>
         </div>
+      </div>
 
-        <Separator />
+      <Separator />
 
+      <div className="flex flex-col md:flex-row md:items-center md:gap-2">
         {/* Seção do Advogado */}
-        <div className="space-y-2">
+        <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <User className="size-4" />
             <span>Advogado(a)</span>
           </div>
           <div className="flex items-center gap-4 pl-6">
-            <Avatar className="size-12 border">
-              <AvatarFallback>
+            <Avatar className="size-10 border">
+              <AvatarFallback className="text-sm">
                 {services.lawyer.name
                   .split(' ')
                   .map(n => n[0])
@@ -133,17 +135,17 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">
+              <p className="font-medium text-sm">
                 {formatFullName(services.lawyer.name)}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 OAB: {services.lawyer.oab}
               </p>
-              <p className="text-sm inline-flex items-center gap-1.5 text-muted-foreground">
+              <p className="text-xs inline-flex items-center gap-1.5 text-muted-foreground">
                 {services.lawyer.email ? (
-                  <Mail className="size-4" />
+                  <Mail className="size-3" />
                 ) : (
-                  <X className="size-4" />
+                  <X className="size-3" />
                 )}
                 {services.lawyer.email
                   ? services.lawyer.email
@@ -153,17 +155,19 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
           </div>
         </div>
 
-        <Separator />
+        {/* Separator adaptável */}
+        <Separator orientation="horizontal" className="my-4 md:hidden" />
+        <Separator orientation="vertical" className="hidden md:block mx-4" />
 
         {/* Seção do Funcionário */}
-        <div className="space-y-2">
+        <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <UserCog className="size-4" />
             <span>Funcionário(a)</span>
           </div>
           <div className="flex items-center gap-4 pl-6">
-            <Avatar className="size-12 border">
-              <AvatarFallback>
+            <Avatar className="size-10 border">
+              <AvatarFallback className="text-sm">
                 {services.agent.name
                   .split(' ')
                   .map(n => n[0])
@@ -172,38 +176,40 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{services.agent.name}</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-medium text-sm">{services.agent.name}</p>
+              <p className="text-xs text-muted-foreground">
                 Função:{' '}
                 {services.agent.role === 'ADMIN' ? 'Administrador' : 'Membro'}
               </p>
-              <p className="text-sm inline-flex items-center gap-1.5 text-muted-foreground">
-                <Mail className="size-4" />
+              <p className="text-xs inline-flex items-center gap-1.5 text-muted-foreground">
+                <Mail className="size-3" />
                 {services.agent.email}
               </p>
             </div>
           </div>
         </div>
+      </div>
 
-        <Separator />
 
-        {/* Seção da Observação */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <FileText className="size-4" />
-            <span>Observação</span>
-          </div>
-          <div className="pl-6 bg-muted/50 p-3 rounded">
-            <p
-              className={`text-sm ${services.observation === '' && 'text-muted-foreground'}`}
-            >
-              {services.observation === ''
-                ? 'Nenhuma observação adicionada'
-                : services.observation}
-            </p>
-          </div>
+      <Separator />
+
+      {/* Seção da Observação */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+          <FileText className="size-4" />
+          <span>Observação</span>
+        </div>
+        <div className="pl-6 bg-muted/50 p-3 rounded">
+          <p
+            className={`text-sm ${services.observation === '' && 'text-muted-foreground'}`}
+          >
+            {services.observation === ''
+              ? 'Nenhuma observação adicionada'
+              : services.observation}
+          </p>
         </div>
       </div>
+
 
       <DialogFooter className="flex flex-col space-y-2 pt-2 border-t">
         <div className="flex flex-col w-full text-sm gap-2">
