@@ -63,7 +63,7 @@ export function MonthlyServicesCard() {
                 }`}
             >
               {variationMonth >= 0 ? '+' : ''}
-              {variationMonth}%
+              {variationMonth.toFixed(1)}%
             </span>
             <span className="text-sm text-muted-foreground ml-1">
               vs {totalPreviousMonth} atendimento(s) em {lastMonthFormatted}

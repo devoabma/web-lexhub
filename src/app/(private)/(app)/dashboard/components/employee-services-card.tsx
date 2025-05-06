@@ -105,8 +105,8 @@ export function EmployeeServicesCard({
                 <span
                   className={`text-xs ml-2 ${variationMonth >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}
                 >
-                  {variationMonth >= 0 ? '+' : '-'}
-                  {variationMonth}%
+                  {variationMonth >= 0 ? '+' : ''}
+                  {variationMonth.toFixed(1)}%
                 </span>
               </div>
             )}

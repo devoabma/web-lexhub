@@ -58,7 +58,7 @@ export function AnnualServicesCard() {
                 }`}
             >
               {variationAnnual >= 0 ? '+' : ''}
-              {variationAnnual}%
+              {variationAnnual.toFixed(1)}%
             </span>
             <span className="text-sm text-muted-foreground ml-1">
               vs {totalPreviousYear} atendimento(s) em {lastYear}
