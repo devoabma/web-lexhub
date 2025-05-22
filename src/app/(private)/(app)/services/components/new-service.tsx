@@ -380,42 +380,44 @@ export function NewService() {
                   render={({ field }) => (
                     <FormItem className="flex flex-col w-full">
                       <FormLabel>Tipo de Serviço</FormLabel>
-                      <Popover
+
+                      <Dialog
                         open={isOpenPopover}
                         onOpenChange={setIsOpenPopover}
                       >
-                        <PopoverTrigger asChild>
-                          <FormControl className="rounded hover:bg-transparent">
+                        <DialogTrigger asChild>
+                          <FormControl>
                             <Button
                               variant="outline"
                               className={cn(
-                                'w-full justify-between rounded',
+                                'w-full justify-between',
                                 !field.value.length && 'text-muted-foreground'
                               )}
                             >
                               {field.value.length > 0
                                 ? `${field.value.length} serviço(s) selecionado(s)`
                                 : 'Selecione os tipos de serviço'}
-                              <ChevronsUpDown className="ml-2 size-4 rounded shrink-0 opacity-50" />
+                              <ChevronsUpDown className="ml-2 size-4 opacity-50" />
                             </Button>
                           </FormControl>
-                        </PopoverTrigger>
+                        </DialogTrigger>
 
-                        <PopoverContent className="w-full p-0 rounded">
+                        <DialogContent className="p-0 w-[90%] rounded">
+                          <DialogHeader>
+                            <DialogTitle className="sr-only">
+                              Selecionar Tipo de Serviço
+                            </DialogTitle>
+                          </DialogHeader>
+
                           <Command>
-                            <CommandInput
-                              placeholder="Buscar tipo de serviço..."
-                              className="h-9 w-full"
-                            />
-                            <CommandList className="rounded">
+                            <CommandInput placeholder="Buscar tipo de serviço..." />
+                            <CommandList className="max-h-64 overflow-y-auto">
                               <CommandEmpty>
                                 Nenhum serviço encontrado.
                               </CommandEmpty>
-
-                              <CommandGroup className="max-h-32 overflow-y-scroll! rounded">
+                              <CommandGroup>
                                 {results?.servicesTypes.map(type => (
                                   <CommandItem
-                                    className="cursor-pointer rounded"
                                     key={type.id}
                                     value={type.name}
                                     onSelect={() => {
@@ -427,7 +429,6 @@ export function NewService() {
                                         newValue.splice(index, 1)
                                       }
                                       field.onChange(newValue)
-
                                       setSelectedServiceTypes(newValue)
                                     }}
                                   >
@@ -445,8 +446,8 @@ export function NewService() {
                               </CommandGroup>
                             </CommandList>
                           </Command>
-                        </PopoverContent>
-                      </Popover>
+                        </DialogContent>
+                      </Dialog>
                     </FormItem>
                   )}
                 />
