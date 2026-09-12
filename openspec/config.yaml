@@ -1,0 +1,69 @@
+schema: spec-driven
+
+# Contexto do projeto — enviado à IA sempre que um artefato (proposal, specs,
+# design, tasks) é criado. Mantenha curto e factual; detalhes ficam em docs/.
+context: |
+  Projeto: LexHub / "OAB Atende" — frontend web para registro e gestão de
+  atendimentos a advogados(as) na OAB Seccional do Maranhão (uso interno).
+  Repositório: web-lexhub (apenas frontend). O backend é uma API REST separada
+  (NEXT_PUBLIC_API_URL, padrão http://localhost:3333) que não está neste repo.
+
+  Stack:
+  - Next.js 15 (App Router, Turbopack no dev) + React 19 + TypeScript strict
+  - Tailwind CSS v4 + shadcn/ui (estilo new-york, base slate) + lucide-react
+  - TanStack Query v5 (estado de servidor) + Axios (withCredentials)
+  - react-hook-form + zod (formulários e validação) + sonner (toasts)
+  - date-fns (locale ptBR), recharts (gráficos), framer-motion (animações)
+  - Biome (lint + format) — aspas simples, sem ponto e vírgula, 2 espaços,
+    arrowParentheses "asNeeded", trailingCommas "es5"
+  - Gerenciador de pacotes: pnpm. Não há testes automatizados.
+
+  Arquitetura:
+  - src/api/<domínio>/<ação>.ts: uma função por endpoint, tipando a resposta.
+  - src/app/(public)/(auth): login, esqueci/redefinir senha.
+  - src/app/(private)/(app): dashboard, services (atendimentos),
+    services-types (tipos de serviço), agents (funcionários).
+  - Componentes de página ficam em ./components ao lado do page.tsx.
+  - Autenticação: cookie httpOnly "@lexhub-auth" (JWT com sub, role, exp)
+    definido pelo backend; src/middleware.ts faz o controle de rotas e
+    src/auth.ts lê o cookie em Server Components.
+  - Filtros e paginação de listagens vivem na URL (searchParams), 10 itens
+    por página, queryKey do React Query inclui todos os filtros.
+
+  Domínio (glossário):
+  - Atendimento (service): registro de um atendimento a um(a) advogado(a).
+    status OPEN (em andamento) | COMPLETED (concluído);
+    assistance PERSONALLY (presencial) | REMOTE (remoto).
+  - Advogado(a) (lawyer): identificado pelo número de inscrição OAB.
+  - Funcionário(a) (agent): usuário do sistema. role ADMIN | MEMBER.
+    Pode estar inativo (campo inactive = data da desativação).
+  - Tipo de Serviço (service type): categoria do atendimento; um atendimento
+    tem 1..N tipos.
+  - Atendimento externo: advogado(a) informado manualmente (nome/e-mail),
+    sem consulta prévia pela OAB.
+
+  Idioma: toda a UI, mensagens, specs e documentação em português (pt-BR).
+  Identificadores de código (variáveis, arquivos, rotas) em inglês.
+
+  Documentação de referência: docs/ (arquitetura, contratos da API,
+  domínio/permissões e débitos técnicos conhecidos).
+
+rules:
+  proposal:
+    - Escrever em pt-BR.
+    - Indicar se a mudança exige alteração no backend (API) ou é só frontend.
+    - Listar as capabilities de openspec/specs/ afetadas.
+  specs:
+    - >-
+      Escrever em pt-BR, mas usar a palavra-chave normativa MUST (ou SHALL)
+      no corpo de cada requisito, pois o validador do OpenSpec exige isso.
+      Exemplo - "O sistema MUST exibir ...".
+    - Cada requisito precisa de pelo menos um cenário WHEN/THEN.
+    - Descrever comportamento observável, não detalhes de implementação.
+  design:
+    - Seguir os padrões existentes (src/api por endpoint, React Query,
+      react-hook-form + zod, componentes shadcn/ui).
+    - Considerar as chaves de cache do React Query afetadas e suas
+      invalidações.
+  tasks:
+    - Incluir tarefa de rodar "pnpm biome check" e "pnpm build" ao final.
