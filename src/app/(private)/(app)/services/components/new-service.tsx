@@ -68,7 +68,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 const consultLawyerFormSchema = z.object({
-  oab: z.string().min(1, {
+  oab: z.string().trim().min(1, {
     message: 'O número da OAB é obrigatório',
   }),
 })
