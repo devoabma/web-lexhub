@@ -16,7 +16,7 @@ export default async function ConfirmSendEmail({
   const { email } = await searchParams
 
   return (
-    <Card className="w-full max-w-md shadow-lg border-0">
+    <Card className="w-full shadow-lg">
       <MessageEmailSend email={email} />
     </Card>
   )

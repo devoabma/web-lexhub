@@ -6,7 +6,7 @@ interface MessageFieldErrorProps {
 
 export function MessageFieldError({ children }: MessageFieldErrorProps) {
   return (
-    <span className="mt-1 text-sm font-medium leading-none text-red-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+    <span className="mt-1 text-sm font-medium leading-none text-destructive peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
       {children}
     </span>
   )

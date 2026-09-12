@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle, LoaderCircle } from 'lucide-react'
+import { CircleCheck, LoaderCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface FinishedServiceProps {
@@ -55,7 +55,7 @@ export function FinishedService({
   }
 
   return (
-    <DialogContent className="rounded-2xl">
+    <DialogContent className="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>Concluir Atendimento</DialogTitle>
         <DialogDescription>
@@ -64,21 +64,21 @@ export function FinishedService({
       </DialogHeader>
 
       <DialogFooter>
-        <Button
-          className="rounded cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white"
-          disabled={isFinishing}
-          onClick={handleFinishedService}
-        >
+        <DialogClose asChild>
+          <Button variant="outline">Voltar</Button>
+        </DialogClose>
+
+        <Button disabled={isFinishing} onClick={handleFinishedService}>
           {!isFinishing ? (
             <>
-              <CheckCircle className="size-4" />
+              <CircleCheck />
               Concluir
             </>
           ) : (
-            <div className="flex items-center gap-2">
-              <LoaderCircle className="size-4 animate-spin" />
+            <>
+              <LoaderCircle className="animate-spin" />
               Concluindo...
-            </div>
+            </>
           )}
         </Button>
       </DialogFooter>

@@ -1,10 +1,10 @@
 'use client'
 
+import { FilterInput } from '@/components/app/filter-input'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Search, X } from 'lucide-react'
+import { Fingerprint, Search, X } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -63,61 +63,53 @@ export function TypesTableFilters() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFilterTypeService)}
-        className="flex items-center gap-2"
+        className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center"
       >
-        <span className="text-sm font-semibold">Filtros:</span>
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem className="sm:w-72 lg:w-80">
+              <FormControl>
+                <FilterInput {...field} placeholder="Nome do Serviço" />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
           name="id"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="sm:w-56 lg:w-72">
               <FormControl>
-                <Input
+                <FilterInput
                   {...field}
+                  icon={Fingerprint}
                   placeholder="Identificador"
-                  className="h-8 w-72 max-md:w-80 rounded"
+                  className="font-mono placeholder:font-sans"
                 />
               </FormControl>
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Nome do Serviço"
-                  className="h-8 w-xl max-md:w-80 rounded"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <div className="flex gap-2">
+          <Button type="submit" className="flex-1 sm:flex-none">
+            <Search />
+            Filtrar resultados
+          </Button>
 
-        <Button
-          type="submit"
-          size="sm"
-          className="cursor-pointer rounded bg-sky-700 hover:bg-sky-600 text-white"
-        >
-          <Search className="size-4" />
-          Filtrar resultados
-        </Button>
-
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          className="cursor-pointer rounded"
-          onClick={handleClearFilters}
-        >
-          <X className="size-4" />
-          Remover filtros
-        </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="flex-1 text-muted-foreground sm:flex-none"
+            onClick={handleClearFilters}
+          >
+            <X />
+            Remover filtros
+          </Button>
+        </div>
       </form>
     </Form>
   )

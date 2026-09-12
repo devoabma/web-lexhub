@@ -4,6 +4,16 @@ import { createAgent } from '@/api/agents/create'
 import { PasswordInput } from '@/components/app/password-input'
 import { Button } from '@/components/ui/button'
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import {
   Form,
   FormControl,
   FormDescription,
@@ -13,21 +23,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { CirclePlus, LoaderCircle, UserRoundPlus } from 'lucide-react'
+import { LoaderCircle, Plus, UserRoundPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -42,8 +42,11 @@ const NewAgentFormSchema = z.object({
 type NewAgentFormType = z.infer<typeof NewAgentFormSchema>
 
 export function NewAgent() {
-  // FIXME: Guardará o estado do Sheet se ele estiver aberto ou fechado
-  const [sheetIsOpen, setSheetIsOpen] = useState(false)
+  // FIXME: Guardará o estado do Drawer se ele estiver aberto ou fechado
+  const [drawerIsOpen, setDrawerIsOpen] = useState(false)
+
+  // Drawer lateral no desktop e inferior no celular
+  const isMobile = useIsMobile()
 
   const form = useForm<NewAgentFormType>({
     shouldUnregister: true, // Desregistrar o campo do formulário
@@ -72,8 +75,8 @@ export function NewAgent() {
         password: data.password,
       })
 
-      // Fechar o Sheet quando o funcionário for registrado
-      setSheetIsOpen(false)
+      // Fechar o Drawer quando o funcionário for registrado
+      setDrawerIsOpen(false)
 
       toast.success('Funcionário registrado com sucesso!', {
         description:
@@ -100,106 +103,104 @@ export function NewAgent() {
   }
 
   return (
-    <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
-      <SheetTrigger asChild>
-        <Button className="bg-sky-700 flex items-center cursor-pointer rounded text-white hover:bg-sky-600">
-          <CirclePlus className="size-5" />
+    <Drawer
+      direction={isMobile ? 'bottom' : 'right'}
+      open={drawerIsOpen}
+      onOpenChange={setDrawerIsOpen}
+    >
+      <DrawerTrigger asChild>
+        <Button>
+          <Plus />
           Novo Funcionário
         </Button>
-      </SheetTrigger>
+      </DrawerTrigger>
 
-      <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto px-4 w-full">
-        <SheetHeader className="mt-2">
-          <SheetTitle className="font-calsans text-2xl">
-            Novo Funcionário
-          </SheetTitle>
-          <SheetDescription className="text-muted-foreground">
+      <DrawerContent>
+        <DrawerHeader className="border-b pr-12">
+          <DrawerTitle>Novo Funcionário</DrawerTitle>
+          <DrawerDescription>
             Preencha as informações para registrar um novo funcionário
-          </SheetDescription>
-        </SheetHeader>
-
-        <Separator orientation="horizontal" />
+          </DrawerDescription>
+        </DrawerHeader>
 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleNewAgent)}
-            className="space-y-6 pt-4"
+            className="flex min-h-0 flex-1 flex-col"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field, formState: { errors } }) => (
-                <FormItem>
-                  <FormLabel>Nome completo</FormLabel>
-                  <FormControl>
-                    <Input {...field} className="rounded" />
-                  </FormControl>
+            <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field, formState: { errors } }) => (
+                  <FormItem>
+                    <FormLabel>Nome completo</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
 
-                  {errors.name ? (
-                    <FormMessage className="text-red-500 text-xs">
-                      {errors.name.message}
-                    </FormMessage>
-                  ) : (
-                    <FormDescription className="text-muted-foreground text-xs">
-                      Por favor, insira o nome completo do funcionário
-                    </FormDescription>
-                  )}
-                </FormItem>
-              )}
-            />
+                    {errors.name ? (
+                      <FormMessage>{errors.name.message}</FormMessage>
+                    ) : (
+                      <FormDescription>
+                        Por favor, insira o nome completo do funcionário
+                      </FormDescription>
+                    )}
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field, formState: { errors } }) => (
-                <FormItem>
-                  <FormLabel>E-mail para acesso</FormLabel>
-                  <FormControl>
-                    <Input {...field} className="rounded" />
-                  </FormControl>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field, formState: { errors } }) => (
+                  <FormItem>
+                    <FormLabel>E-mail para acesso</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
 
-                  {errors.email ? (
-                    <FormMessage className="text-red-500 text-xs">
-                      {errors.email.message}
-                    </FormMessage>
-                  ) : (
-                    <FormDescription className="text-muted-foreground text-xs">
-                      Por favor, insira o e-mail do funcionário validado
-                    </FormDescription>
-                  )}
-                </FormItem>
-              )}
-            />
+                    {errors.email ? (
+                      <FormMessage>{errors.email.message}</FormMessage>
+                    ) : (
+                      <FormDescription>
+                        Por favor, insira o e-mail do funcionário validado
+                      </FormDescription>
+                    )}
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field, formState: { errors } }) => (
-                <FormItem>
-                  <FormLabel>Senha provisória</FormLabel>
-                  <FormControl>
-                    <PasswordInput {...field} className="rounded" />
-                  </FormControl>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field, formState: { errors } }) => (
+                  <FormItem>
+                    <FormLabel>Senha provisória</FormLabel>
+                    <FormControl>
+                      <PasswordInput {...field} />
+                    </FormControl>
 
-                  {errors.password ? (
-                    <FormMessage className="text-red-500 text-xs">
-                      {errors.password.message}
-                    </FormMessage>
-                  ) : (
-                    <FormDescription className="text-muted-foreground text-xs">
-                      Senha padrão provisória definida: <b>@102030@</b>
-                    </FormDescription>
-                  )}
-                </FormItem>
-              )}
-            />
+                    {errors.password ? (
+                      <FormMessage>{errors.password.message}</FormMessage>
+                    ) : (
+                      <FormDescription>
+                        Senha padrão provisória definida: <b>@102030@</b>
+                      </FormDescription>
+                    )}
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <SheetFooter className="flex items-center justify-end mt-8 flex-row gap-2 p-0">
-              <Button
-                type="submit"
-                disabled={isCreating}
-                className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
-              >
+            <DrawerFooter className="flex-row justify-end border-t">
+              <DrawerClose asChild>
+                <Button type="button" variant="outline">
+                  Cancelar
+                </Button>
+              </DrawerClose>
+
+              <Button type="submit" disabled={isCreating}>
                 {isCreating ? (
                   <>
                     <LoaderCircle className="animate-spin" />
@@ -207,15 +208,15 @@ export function NewAgent() {
                   </>
                 ) : (
                   <>
-                    <UserRoundPlus className="size-4" />
+                    <UserRoundPlus />
                     Criar Novo
                   </>
                 )}
               </Button>
-            </SheetFooter>
+            </DrawerFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   )
 }

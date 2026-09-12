@@ -2,15 +2,16 @@
 
 import { getAllServices } from '@/api/services/get-all'
 import { Pagination } from '@/components/app/pagination'
+import { TableEmptyState } from '@/components/app/table-empty-state'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
 import { useQuery } from '@tanstack/react-query'
+import { ClipboardList } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { ServiceTableFilters } from './service-table-filters'
@@ -21,7 +22,10 @@ interface ServicesListProps {
   idAgentAuthenticated: string | false
   isAgentAdmin: boolean
 }
-export function ServicesList({ idAgentAuthenticated, isAgentAdmin }: ServicesListProps) {
+export function ServicesList({
+  idAgentAuthenticated,
+  isAgentAdmin,
+}: ServicesListProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -68,39 +72,45 @@ export function ServicesList({ idAgentAuthenticated, isAgentAdmin }: ServicesLis
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       {/* FIXME: Componente Service Table Filters */}
       <ServiceTableFilters />
 
-      <div className="border rounded mt-8">
+      <div className="overflow-hidden rounded-lg border bg-card shadow-xs">
         <Table>
-          {results?.services.length === 0 && (
-            <TableCaption className="pb-4 text-muted-foreground">
-              Não encontramos nenhum atendimento cadastrado.
-            </TableCaption>
-          )}
-
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12" />
-              <TableHead className="w-28">Status</TableHead>
-              <TableHead className="w-38 text-center">
-                {results?.services.some(service => service.status === 'OPEN')
-                  ? 'Realizado há'
-                  : 'Finalizado há'}
+              <TableHead>Advogado(a)</TableHead>
+              <TableHead className="hidden w-36 sm:table-cell">
+                Status
               </TableHead>
-              <TableHead className="w-32 text-center">Atendimento</TableHead>
-              <TableHead className="w-28 text-center">Número OAB</TableHead>
-              <TableHead className="max-w-xs">Advogado(a)</TableHead>
-              <TableHead className="w-78">Funcionário(a)</TableHead>
-              <TableHead className="w-28" />
-              <TableHead className="w-28" />
+              <TableHead className="hidden w-32 md:table-cell">
+                Atendimento
+              </TableHead>
+              <TableHead className="hidden lg:table-cell">
+                Funcionário(a)
+              </TableHead>
+              <TableHead className="hidden w-44 lg:table-cell">
+                Atualizado
+              </TableHead>
+              <TableHead className="w-32 text-right">
+                <span className="sr-only">Ações</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
 
           {/* FIXME: Componente Service Table Row */}
-          <TableBody className="border-b">
+          <TableBody>
             {isLoading && <ServiceTableSkeleton />}
+
+            {results?.services.length === 0 && (
+              <TableEmptyState
+                colSpan={6}
+                icon={ClipboardList}
+                title="Não encontramos nenhum atendimento cadastrado."
+                description="Ajuste os filtros ou registre um novo atendimento."
+              />
+            )}
 
             {results?.services.map(service => {
               return (
@@ -114,16 +124,18 @@ export function ServicesList({ idAgentAuthenticated, isAgentAdmin }: ServicesLis
             })}
           </TableBody>
         </Table>
-      </div>
 
-      {/* FIXME: Componente de Paginação */}
-      <Pagination
-        onPageChange={handlePageChange}
-        pageIndex={pageIndex}
-        totalCount={results?.total ?? 0}
-        finalText="atendimento(s)"
-        perPage={10}
-      />
-    </>
+        {/* FIXME: Componente de Paginação */}
+        <div className="border-t px-3 py-2">
+          <Pagination
+            onPageChange={handlePageChange}
+            pageIndex={pageIndex}
+            totalCount={results?.total ?? 0}
+            finalText="atendimento(s)"
+            perPage={10}
+          />
+        </div>
+      </div>
+    </div>
   )
 }

@@ -42,21 +42,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { Check, ChevronsUpDown, LoaderCircle, SquarePen } from 'lucide-react'
+import {
+  Check,
+  ChevronsUpDown,
+  LoaderCircle,
+  SquarePen,
+  UserRoundPen,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { PatternFormat } from 'react-number-format'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
 const newServiceExternalFormSchema = z.object({
-  oab: z.string().min(1, {
+  oab: z.string().trim().min(1, {
     message: 'O número da OAB é obrigatório',
   }),
   name: z.string().min(1, {
@@ -152,30 +156,24 @@ export function NewServiceExternal() {
   return (
     <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex items-center cursor-pointer rounded text-muted-foreground"
-        >
+        <Button variant="outline">
+          <UserRoundPen />
           Atendimento Externo
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-md md:max-w-lg overflow-y-auto px-4 rounded">
-        <DialogHeader className="mt-2">
-          <DialogTitle className="font-calsans text-2xl">
-            Novo Atendimento Externo
-          </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
+      <DialogContent className="sm:max-w-md md:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Novo Atendimento Externo</DialogTitle>
+          <DialogDescription>
             Preencha as informações para registrar um novo atendimento externo
           </DialogDescription>
         </DialogHeader>
 
-        <Separator orientation="horizontal" />
-
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleCreateNewServiceExternal)}
-            className="space-y-6 pt-2"
+            className="space-y-4"
           >
             <FormField
               control={form.control}
@@ -184,7 +182,7 @@ export function NewServiceExternal() {
                 <FormItem>
                   <FormLabel>Número de Inscrição OAB</FormLabel>
                   <FormControl>
-                    <Input {...field} className="rounded" />
+                    <Input {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -197,7 +195,7 @@ export function NewServiceExternal() {
                 <FormItem>
                   <FormLabel>Nome completo</FormLabel>
                   <FormControl>
-                    <Input {...field} className="rounded" />
+                    <Input {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -210,7 +208,7 @@ export function NewServiceExternal() {
                 <FormItem>
                   <FormLabel>Insira o e-mail</FormLabel>
                   <FormControl>
-                    <Input {...field} className="rounded" />
+                    <Input {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -226,12 +224,12 @@ export function NewServiceExternal() {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <FormControl className="rounded">
-                      <SelectTrigger className="rounded w-full">
+                    <FormControl>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecione a forma do atendimento" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="rounded">
+                    <SelectContent>
                       <SelectItem value="PERSONALLY">Presencial</SelectItem>
                       <SelectItem value="REMOTE">Remoto</SelectItem>
                     </SelectContent>
@@ -249,7 +247,7 @@ export function NewServiceExternal() {
 
                   <Dialog>
                     <DialogTrigger asChild>
-                      <FormControl className="rounded hover:bg-transparent">
+                      <FormControl className="hover:bg-transparent">
                         <Button
                           variant="outline"
                           className={cn(
@@ -260,12 +258,12 @@ export function NewServiceExternal() {
                           {field.value.length > 0
                             ? `${field.value.length} serviço(s) selecionado(s)`
                             : 'Selecione os tipos de serviço'}
-                          <ChevronsUpDown className="ml-2 size-4 rounded shrink-0 opacity-50" />
+                          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </DialogTrigger>
 
-                    <DialogContent className="w-full py-2 px-0 rounded">
+                    <DialogContent className="w-full py-2 px-0">
                       <DialogTitle className="sr-only">
                         Selecionar os tipos de serviços
                       </DialogTitle>
@@ -275,14 +273,13 @@ export function NewServiceExternal() {
                           placeholder="Buscar tipo de serviço..."
                           className="max-h-64 overflow-y-auto"
                         />
-                        <CommandList className="rounded">
+                        <CommandList>
                           <CommandEmpty>
                             Nenhum serviço encontrado.
                           </CommandEmpty>
-                          <CommandGroup className="max-h-64 overflow-y-auto rounded">
+                          <CommandGroup className="max-h-64 overflow-y-auto">
                             {results?.servicesTypes.map(type => (
                               <CommandItem
-                                className="cursor-pointer rounded"
                                 key={type.id}
                                 value={type.name}
                                 onSelect={() => {
@@ -328,7 +325,7 @@ export function NewServiceExternal() {
                   <FormControl>
                     <Textarea
                       placeholder="Adicione informações relevantes sobre o atendimento"
-                      className="resize-none rounded min-h-24"
+                      className="min-h-20 resize-none"
                       {...field}
                     />
                   </FormControl>
@@ -337,12 +334,8 @@ export function NewServiceExternal() {
               )}
             />
 
-            <DialogFooter className="flex items-center justify-end mt-8 flex-row gap-2 p-0">
-              <Button
-                type="submit"
-                disabled={isCreating}
-                className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
-              >
+            <DialogFooter className="pt-2">
+              <Button type="submit" disabled={isCreating}>
                 {isCreating ? (
                   <>
                     <LoaderCircle className="animate-spin" />
@@ -350,7 +343,7 @@ export function NewServiceExternal() {
                   </>
                 ) : (
                   <>
-                    <SquarePen className="size-4" />
+                    <SquarePen />
                     Criar Atendimento
                   </>
                 )}

@@ -1,73 +1,103 @@
 'use client'
 
-import { getServicesMonthForChart } from '@/api/dashboard/get-services-month-for-chart'
-import { getAllServices } from '@/api/services/get-all'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { getServicesMonthly } from '@/api/dashboard/get-services-monthly'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useQuery } from '@tanstack/react-query'
-
 import {
   CartesianGrid,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
+import {
+  CHART_HEIGHT,
+  axisProps,
+  chartMargin,
+  gridProps,
+  tooltipStyles,
+} from './chart-styles'
+import { DashboardPanel } from './dashboard-panel'
+import { MONTH_NAMES, useDashboardPeriod } from './use-dashboard-period'
 
-export function ServiceChart() {
-  const { data: servicesInMonth, isLoading } = useQuery({
-    queryKey: ['metrics', 'services-month-for-chart'],
-    queryFn: getServicesMonthForChart,
+export function ServiceChart({ className }: { className?: string }) {
+  const { year, month } = useDashboardPeriod()
+
+  const {
+    data: servicesMonthly,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ['metrics', 'services-monthly', year],
+    queryFn: () => getServicesMonthly({ year }),
   })
 
+  // Rótulo ('Jan'..'Dez') do mês selecionado, marcado no gráfico
+  const selectedMonthLabel = servicesMonthly?.months.find(
+    item => item.month === month
+  )?.label
+
   return (
-    <Card className="col-span-9 rounded-2xl">
-      <CardHeader className="flex-row items-center justify-between pb-8">
-        <div className="space-y-1">
-          <CardTitle className="text-base font-medium">
-            Atendimentos por mês
-          </CardTitle>
-          <CardDescription>Atendimento mensal por período</CardDescription>
-        </div>
-      </CardHeader>
+    <DashboardPanel
+      title="Atendimentos por mês"
+      description={
+        servicesMonthly
+          ? `Ano de ${year} · ${servicesMonthly.total} atendimento(s)`
+          : `Ano de ${year}`
+      }
+      isLoading={isLoading}
+      isError={isError}
+      onRetry={() => refetch()}
+      skeleton={<Skeleton className="h-[240px] w-full" />}
+      className={className}
+    >
+      <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
+        <LineChart
+          data={servicesMonthly?.months}
+          style={{ fontSize: 12 }}
+          margin={chartMargin}
+        >
+          <YAxis {...axisProps} width={40} allowDecimals={false} />
 
-      {isLoading ? (
-        <CardContent className="h-[300px]">
-          <Skeleton className="h-full w-full bg-muted-foreground/5 rounded-2xl" />
-        </CardContent>
-      ) : (
-        <CardContent>
-          <ResponsiveContainer width="100%" height={240}>
-            <LineChart data={servicesInMonth} style={{ fontSize: 12 }}>
-              <YAxis
-                stroke="#888"
-                tickLine={false}
-                axisLine={false}
-                width={80}
-                tickFormatter={value => `${value}`}
-              />
+          <XAxis dataKey="label" {...axisProps} dy={12} />
 
-              <XAxis dataKey="data" tickLine={false} axisLine={false} dy={16} />
+          <CartesianGrid {...gridProps} />
 
-              <CartesianGrid vertical={false} className="stroke-muted" />
+          {selectedMonthLabel && (
+            <ReferenceLine
+              x={selectedMonthLabel}
+              stroke="var(--brand-red)"
+              strokeDasharray="4 4"
+            />
+          )}
 
-              <Line
-                type="linear"
-                dataKey="services"
-                stroke="#0284c7"
-                strokeWidth={2}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      )}
-    </Card>
+          <Tooltip
+            cursor={{ stroke: 'var(--border)' }}
+            formatter={value => [value, 'Atendimentos']}
+            labelFormatter={(label, payload) => {
+              const monthNumber = payload?.[0]?.payload.month
+
+              return monthNumber
+                ? `${MONTH_NAMES[monthNumber - 1]} de ${year}`
+                : label
+            }}
+            {...tooltipStyles}
+          />
+
+          <Line
+            type="linear"
+            dataKey="total"
+            stroke="var(--chart-1)"
+            strokeWidth={2}
+            dot={{ r: 3, fill: 'var(--chart-1)' }}
+            activeDot={{ r: 5, stroke: 'var(--brand-red)' }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </DashboardPanel>
   )
 }

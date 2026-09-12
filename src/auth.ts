@@ -15,11 +15,14 @@ export async function checkAdminStatus() {
     return false
   }
 
-  const decodedToken: JWTTokenProps = jwtDecode(String(token))
+  // Cookie malformado não derruba a página: é tratado como sem permissão
+  try {
+    const { role } = jwtDecode<JWTTokenProps>(token)
 
-  const role = decodedToken.role
-
-  return role === 'ADMIN'
+    return role === 'ADMIN'
+  } catch {
+    return false
+  }
 }
 
 export async function getIsAgentAuthenticated() {
@@ -31,9 +34,12 @@ export async function getIsAgentAuthenticated() {
     return false
   }
 
-  const decodedToken: JWTTokenProps = jwtDecode(String(token))
+  // Cookie malformado não derruba a página: é tratado como não autenticado
+  try {
+    const { sub } = jwtDecode<JWTTokenProps>(token)
 
-  const { sub } = decodedToken
-
-  return sub
+    return sub
+  } catch {
+    return false
+  }
 }

@@ -6,9 +6,5 @@ export const metadata: Metadata = {
 }
 
 export default function ForgotPasswordPage() {
-  return (
-    <main className="flex items-center justify-center bg-gradient-to-br from-primary-50 to-foreground-50 p-4">
-      <PasswordRecoveryForm />
-    </main>
-  )
+  return <PasswordRecoveryForm />
 }

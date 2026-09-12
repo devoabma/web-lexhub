@@ -2,110 +2,105 @@ import { jwtDecode } from 'jwt-decode'
 import { type NextRequest, NextResponse } from 'next/server'
 import { env } from './env'
 
+const AUTH_COOKIE = '@lexhub-auth'
+
 const publicRoutes = [
-  { path: '/', whenAuthenticated: 'redirect' },
-  { path: '/forgot-password', whenAuthenticated: 'redirect' },
-  { path: '/reset-password', whenAuthenticated: 'redirect' },
-  { path: '/confirm-send-email', whenAuthenticated: 'redirect' },
-] as const
-const adminRoutes = [
-  { path: '/services-types', whenAuthenticated: 'redirect' },
-  { path: '/agents', whenAuthenticated: 'redirect' },
-  { path: '/services', whenAuthenticated: 'next' },
-] as const
+  '/',
+  '/forgot-password',
+  '/reset-password',
+  '/confirm-send-email',
+]
+
+// Rotas exclusivas de administrador; as subrotas (ex.: /agents/123) herdam a regra
+const adminRoutes = ['/agents', '/services-types']
 
 // Redireciona o usuário caso ele acesse uma rota privada sem estar logado
 const REDIRECT_WHEN_NOT_LOGGED_IN = '/'
 
+// Redireciona o usuário logado que acessa uma rota pública ou sem permissão
+const REDIRECT_WHEN_LOGGED_IN = '/dashboard'
+
 interface JWTTokenProps {
+  sub: string
   role: 'ADMIN' | 'MEMBER'
   exp: number
 }
 
+// Decodifica o JWT sem verificar a assinatura: serve só para a UI, a API
+// valida assinatura e papel em todo endpoint. Token malformado, sem `exp` ou
+// expirado é tratado como sessão inválida
+function getSession(token: string) {
+  try {
+    const session = jwtDecode<JWTTokenProps>(token)
+
+    if (typeof session.exp !== 'number' || session.exp * 1000 <= Date.now()) {
+      return null
+    }
+
+    return session
+  } catch {
+    return null
+  }
+}
+
+function isAdminRoute(path: string) {
+  return adminRoutes.some(
+    route => path === route || path.startsWith(`${route}/`)
+  )
+}
+
+function redirectTo(request: NextRequest, pathname: string) {
+  const redirectUrl = request.nextUrl.clone()
+
+  redirectUrl.pathname = pathname
+  redirectUrl.search = ''
+
+  return NextResponse.redirect(redirectUrl)
+}
+
+// Apaga o cookie com o mesmo domain e path com que a API o grava e também a
+// variante sem domain (cookies antigos, regravados pelo middleware)
+function clearAuthCookie(response: NextResponse) {
+  response.cookies.set(AUTH_COOKIE, '', {
+    path: '/',
+    domain: env.NEXT_PUBLIC_DOMAIN,
+    maxAge: 0,
+  })
+
+  // `response.cookies` guarda um cookie por nome e regrava todos os
+  // Set-Cookie a cada `set`: a variante sem domain vai direto no header e
+  // precisa ser a última escrita de cookie da resposta
+  response.headers.append('Set-Cookie', `${AUTH_COOKIE}=; Path=/; Max-Age=0`)
+
+  return response
+}
+
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
-  const publicRoute = publicRoutes.find(route => route.path === path)
-  const adminRoute = adminRoutes.find(route => route.path === path)
+  const isPublicRoute = publicRoutes.includes(path)
 
-  let token: JWTTokenProps | null = null
+  const authCookie = request.cookies.get(AUTH_COOKIE)
+  const session = authCookie ? getSession(authCookie.value) : null
 
-  const authToken = request.cookies.get('@lexhub-auth')
+  // Sem sessão válida: rota pública abre normalmente (nunca redireciona `/`
+  // para `/`) e rota privada volta para o login
+  if (!session) {
+    const response = isPublicRoute
+      ? NextResponse.next()
+      : redirectTo(request, REDIRECT_WHEN_NOT_LOGGED_IN)
 
-  if (authToken) {
-    token = jwtDecode(authToken.value)
-
-    // Verifica se o token expirou
-    if (token && token.exp * 1000 < Date.now()) {
-      const redirectUrl = request.nextUrl.clone()
-
-      redirectUrl.pathname = REDIRECT_WHEN_NOT_LOGGED_IN
-
-      const response = NextResponse.redirect(redirectUrl)
-
-      response.cookies.delete('@lexhub-auth')
-
-      return response
-    }
+    // Cookie malformado ou expirado é removido para não ser reenviado
+    return authCookie ? clearAuthCookie(response) : response
   }
 
-  // Se o usuário não estiver logado e a rota for publica, ele pode acessar
-  if (!authToken && publicRoute) {
-    return NextResponse.next()
+  // Se o usuário estiver logado e a rota for pública, ele deve ser redirecionado para a rota privada
+  if (isPublicRoute) {
+    return redirectTo(request, REDIRECT_WHEN_LOGGED_IN)
   }
 
-  // Se o usuário não estiver logado e a rota for privada, ele deve ser redirecionado
-  if (!authToken && !publicRoute) {
-    const redirectUrl = request.nextUrl.clone()
-
-    redirectUrl.pathname = REDIRECT_WHEN_NOT_LOGGED_IN
-
-    return NextResponse.redirect(redirectUrl)
-  }
-
-  // Se o usuário estiver logado e a rota for publica, ele deve ser redirecionado para a rota privada
-  if (
-    authToken &&
-    publicRoute &&
-    publicRoute.whenAuthenticated === 'redirect'
-  ) {
-    const redirectUrl = request.nextUrl.clone()
-
-    redirectUrl.pathname = '/dashboard'
-
-    return NextResponse.redirect(redirectUrl)
-  }
-
-  // Se o usuário estiver logado e a rota for privada, mas não seja admin, ele deve ser redirecionado para a rota privada /dashboard
-  if (
-    authToken &&
-    adminRoutes &&
-    adminRoute?.whenAuthenticated === 'redirect'
-  ) {
-    // Verifica se o token contém o cargo de admin
-    if (token && token.role !== 'ADMIN') {
-      const redirectUrl = request.nextUrl.clone()
-
-      redirectUrl.pathname = '/dashboard'
-
-      return NextResponse.redirect(redirectUrl)
-    }
-  }
-
-  // Se o usuário estiver logado e a rota for privada, so acessará se o token estiver valido
-  if (authToken && !publicRoute) {
-    // Se o token é válido, você pode definir o cookie, caso necessário
-    const response = NextResponse.next()
-
-    response.cookies.set('@lexhub-auth', authToken.value, {
-      path: '/',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      domain: env.NEXT_PUBLIC_DOMAIN,
-      maxAge: 60 * 60 * 24, // 1 dia
-    })
-
-    return response
+  // Se o usuário estiver logado e a rota for de admin, mas ele não seja admin, é redirecionado para /dashboard
+  if (isAdminRoute(path) && session.role !== 'ADMIN') {
+    return redirectTo(request, REDIRECT_WHEN_LOGGED_IN)
   }
 
   return NextResponse.next()

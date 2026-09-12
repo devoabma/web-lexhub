@@ -1,5 +1,9 @@
 'use client'
 
+import AssistanceBadge from '@/components/app/assistance-badge'
+import { CopyContentField } from '@/components/app/copy-content-field'
+import { RoleBadge } from '@/components/app/role-badge'
+import { ServiceStatusBadge } from '@/components/app/service-status-badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,21 +15,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Separator } from '@/components/ui/separator'
 import { calculateDurationService } from '@/utils/calculate-duration-service'
 import { formatFullName } from '@/utils/format-full-name'
 import { format } from 'date-fns'
 import {
-  CheckCircle,
-  Clock,
-  FileText,
+  CalendarCheck,
+  CalendarPlus,
+  type LucideIcon,
   Mail,
-  Monitor,
-  User,
-  UserCog,
-  X,
-  XCircle,
+  MailX,
+  Timer,
 } from 'lucide-react'
+import type * as React from 'react'
 
 interface ServiceDetailsProps {
   services: {
@@ -56,6 +57,66 @@ interface ServiceDetailsProps {
   }
 }
 
+function getInitials(name: string) {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map(n => n[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase()
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+      {children}
+    </p>
+  )
+}
+
+function Person({
+  label,
+  name,
+  children,
+}: {
+  label: string
+  name: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="min-w-0 space-y-2 rounded-md border bg-muted/30 p-3">
+      <SectionLabel>{label}</SectionLabel>
+      <div className="flex items-start gap-3">
+        <Avatar className="size-8 border">
+          <AvatarFallback className="font-medium text-[11px]">
+            {getInitials(name)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 space-y-0.5">{children}</div>
+      </div>
+    </div>
+  )
+}
+
+function TimelineItem({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: LucideIcon
+  label: string
+  value: string
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Icon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+      <span className="text-muted-foreground">{label}:</span>
+      <span className="font-medium tabular-nums">{value}</span>
+    </div>
+  )
+}
+
 export function ServiceDetails({ services }: ServiceDetailsProps) {
   // Formatação de datas
   const formattedCreatedAt = format(services.createdAt, "dd/MM/yyyy 'às' HH:mm")
@@ -69,178 +130,121 @@ export function ServiceDetails({ services }: ServiceDetailsProps) {
     finishedAt: services.finishedAt,
   })
 
+  const hasObservation = Boolean(services.observation)
+
   return (
-    <DialogContent className="max-w-md md:max-w-3xl overflow-y-auto px-4 rounded">
-      <DialogHeader className="mt-4">
-        <div className="flex items-center justify-between">
-          <DialogTitle className="text-xl font-calsans font-bold">
-            Detalhes do Atendimento
-          </DialogTitle>
-          <Badge
-            variant={services.status === 'COMPLETED' ? 'closed' : 'open'}
-            className="ml-2 rounded-full"
-          >
-            {services.status === 'COMPLETED' ? 'Concluído' : 'Em andamento'}
-          </Badge>
+    <DialogContent className="gap-0 p-0 sm:max-w-xl md:max-w-2xl">
+      <DialogHeader className="gap-2 border-b px-5 py-4 pr-12 text-left">
+        <div className="flex flex-wrap items-center gap-2">
+          <DialogTitle>Detalhes do Atendimento</DialogTitle>
+          <ServiceStatusBadge status={services.status} />
         </div>
-        <DialogDescription className="font-mono text-left text-xs tracking-tight">
-          ID: {services.id}
+        <DialogDescription className="flex items-center gap-1 font-mono text-xs">
+          <span className="truncate">ID: {services.id}</span>
+          <CopyContentField value={services.id} label="Copiar ID" />
         </DialogDescription>
       </DialogHeader>
 
-      <Separator orientation="horizontal" />
-
-      <div className="space-y-6 py-2">
-        {/* Service Type Section */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <FileText className="h-4 w-4" />
-            <span>Tipo de Serviço</span>
-          </div>
-          <div className="pl-6">
-            <ul className="list-disc list-inside space-y-1 font-medium text-muted-foreground">
+      <div className="space-y-4 px-5 py-4">
+        {/* Tipos de serviço e forma de atendimento */}
+        <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
+          <div className="space-y-2">
+            <SectionLabel>Tipo de Serviço</SectionLabel>
+            <div className="flex flex-wrap gap-1.5">
               {services.serviceTypes.map(data => (
-                <li key={data.serviceType.id} className="text-sm">
+                <Badge
+                  key={data.serviceType.id}
+                  variant="neutral"
+                  className="text-foreground"
+                >
                   {data.serviceType.name}
-                </li>
+                </Badge>
               ))}
-            </ul>
+            </div>
+          </div>
 
-            <p className="text-sm flex items-center gap-2 mt-2 text-muted-foreground">
-              <Monitor className="size-4" />
-              Atendimento:{' '}
-              {services.assistance === 'PERSONALLY' ? 'Presencial' : 'Remoto'}
-            </p>
+          <div className="space-y-2">
+            <SectionLabel>Atendimento</SectionLabel>
+            <AssistanceBadge type={services.assistance} />
           </div>
         </div>
-      </div>
 
-      <Separator />
-
-      <div className="flex flex-col md:flex-row md:items-center md:gap-2">
-        {/* Seção do Advogado */}
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <User className="size-4" />
-            <span>Advogado(a)</span>
-          </div>
-          <div className="flex items-center gap-4 pl-6">
-            <Avatar className="size-10 border">
-              <AvatarFallback className="text-sm">
-                {services.lawyer.name
-                  .split(' ')
-                  .map(n => n[0])
-                  .join('')
-                  .substring(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-medium text-sm">
-                {formatFullName(services.lawyer.name)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                OAB: {services.lawyer.oab}
-              </p>
-              <p className="text-xs inline-flex items-center gap-1.5 text-muted-foreground">
-                {services.lawyer.email ? (
-                  <Mail className="size-3" />
-                ) : (
-                  <X className="size-3" />
-                )}
+        {/* Advogado(a) e funcionário(a) */}
+        <div className="grid gap-3 md:grid-cols-2">
+          <Person label="Advogado(a)" name={services.lawyer.name}>
+            <p className="truncate font-medium">
+              {formatFullName(services.lawyer.name)}
+            </p>
+            <p className="font-mono text-muted-foreground text-xs">
+              OAB: {services.lawyer.oab}
+            </p>
+            <p className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              {services.lawyer.email ? (
+                <Mail className="size-3 shrink-0" />
+              ) : (
+                <MailX className="size-3 shrink-0" />
+              )}
+              <span className="truncate">
                 {services.lawyer.email
                   ? services.lawyer.email
                   : 'Sem e-mail cadastrado'}
-              </p>
+              </span>
+            </p>
+          </Person>
+
+          <Person label="Funcionário(a)" name={services.agent.name}>
+            <p className="truncate font-medium">{services.agent.name}</p>
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <span className="sr-only">Função:</span>
+              <RoleBadge role={services.agent.role} />
             </div>
-          </div>
+            <p className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <Mail className="size-3 shrink-0" />
+              <span className="truncate">{services.agent.email}</span>
+            </p>
+          </Person>
         </div>
 
-        {/* Separator adaptável */}
-        <Separator orientation="horizontal" className="my-4 md:hidden" />
-        <Separator orientation="vertical" className="hidden md:block mx-4" />
-
-        {/* Seção do Funcionário */}
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <UserCog className="size-4" />
-            <span>Funcionário(a)</span>
-          </div>
-          <div className="flex items-center gap-4 pl-6">
-            <Avatar className="size-10 border">
-              <AvatarFallback className="text-sm">
-                {services.agent.name
-                  .split(' ')
-                  .map(n => n[0])
-                  .join('')
-                  .substring(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-medium text-sm">{services.agent.name}</p>
-              <p className="text-xs text-muted-foreground">
-                Função:{' '}
-                {services.agent.role === 'ADMIN' ? 'Administrador' : 'Membro'}
-              </p>
-              <p className="text-xs inline-flex items-center gap-1.5 text-muted-foreground">
-                <Mail className="size-3" />
-                {services.agent.email}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <Separator />
-
-      {/* Seção da Observação */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <FileText className="size-4" />
-          <span>Observação</span>
-        </div>
-        <div className="pl-6 bg-muted/50 p-3 rounded">
+        {/* Observação */}
+        <div className="space-y-2">
+          <SectionLabel>Observação</SectionLabel>
           <p
-            className={`text-sm ${services.observation === '' && 'text-muted-foreground'}`}
+            className={`whitespace-pre-line rounded-md border bg-muted/30 px-3 py-2 ${hasObservation ? '' : 'text-muted-foreground italic'}`}
           >
-            {services.observation === ''
-              ? 'Nenhuma observação adicionada'
-              : services.observation}
+            {hasObservation
+              ? services.observation
+              : 'Nenhuma observação adicionada'}
           </p>
         </div>
       </div>
 
-
-      <DialogFooter className="flex flex-col space-y-2 pt-2 border-t">
-        <div className="flex flex-col w-full text-sm gap-2">
-          <div className="flex items-center gap-1">
-            <Clock className="size-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Criado em:</span>
-            <span className="font-medium">{formattedCreatedAt}</span>
-          </div>
+      <DialogFooter className="flex-col items-stretch gap-3 border-t px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1 text-xs">
+          <TimelineItem
+            icon={CalendarPlus}
+            label="Criado em"
+            value={formattedCreatedAt}
+          />
 
           {services.status === 'COMPLETED' && (
             <>
-              <div className="flex items-center gap-1">
-                <CheckCircle className="size-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Finalizado em:</span>
-                <span className="font-medium">{formattedFinishedAt}</span>
-              </div>
-
-              <div className="flex items-center gap-1">
-                <Clock className="size-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Duração total:</span>
-                <span className="font-medium ml-1">{durationService}</span>
-              </div>
+              <TimelineItem
+                icon={CalendarCheck}
+                label="Finalizado em"
+                value={formattedFinishedAt}
+              />
+              <TimelineItem
+                icon={Timer}
+                label="Duração total"
+                value={durationService}
+              />
             </>
           )}
-
-          <DialogClose asChild>
-            <Button className="w-full mt-2 rounded bg-sky-700 hover:bg-sky-600 text-white cursor-pointer">
-              Fechar
-            </Button>
-          </DialogClose>
         </div>
+
+        <DialogClose asChild>
+          <Button variant="outline">Fechar</Button>
+        </DialogClose>
       </DialogFooter>
     </DialogContent>
   )

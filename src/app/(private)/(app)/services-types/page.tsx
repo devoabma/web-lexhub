@@ -1,7 +1,7 @@
-import { Separator } from '@/components/ui/separator'
+import { PageHeader } from '@/components/app/page-header'
 import type { Metadata } from 'next'
-import { ServicesTypesList } from './components/types-list'
 import { NewServiceType } from './components/new-type'
+import { ServicesTypesList } from './components/types-list'
 
 export const metadata: Metadata = {
   title: 'Tipos de Atendimentos | OAB Atende',
@@ -9,22 +9,20 @@ export const metadata: Metadata = {
 
 export default function ServicesTypesPage() {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-calsans font-bold tracking-tight">
-          Controle de Serviços
-        </h1>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Controle de Serviços"
+        description="Catálogo de tipos de serviço usados para classificar os atendimentos."
+        actions={
+          <>
+            {/* FIXME: Componente de Novo Tipo de Servico */}
+            <NewServiceType />
+          </>
+        }
+      />
 
-        {/* FIXME: Componente de Novo Tipo de Servico */}
-        <NewServiceType />
-      </div>
-
-      <Separator orientation="horizontal" />
-
-      <div className="space-y-2.5 mt-4">
-        {/* FIXME: Componente que lista os tipos de serviços */}
-        <ServicesTypesList />
-      </div>
+      {/* FIXME: Componente que lista os tipos de serviços */}
+      <ServicesTypesList />
     </div>
   )
 }

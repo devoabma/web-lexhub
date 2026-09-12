@@ -45,7 +45,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { formatFullName } from '@/utils/format-full-name'
@@ -57,9 +56,9 @@ import {
   Check,
   CheckCircle,
   ChevronsUpDown,
-  CirclePlus,
   InfoIcon,
   LoaderCircle,
+  Plus,
   SquarePen,
   UserSearch,
 } from 'lucide-react'
@@ -77,7 +76,7 @@ const consultLawyerFormSchema = z.object({
 type ConsultLawyerFormType = z.infer<typeof consultLawyerFormSchema>
 
 const newServiceFormSchema = z.object({
-  oab: z.string().min(1, {
+  oab: z.string().trim().min(1, {
     message: 'O número da OAB é obrigatório',
   }),
   serviceTypeId: z.array(z.string()).min(1, {
@@ -240,27 +239,23 @@ export function NewService() {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="bg-sky-700 flex items-center cursor-pointer rounded text-white hover:bg-sky-600">
-          <CirclePlus className="size-5" />
+        <Button>
+          <Plus />
           Novo Atendimento
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md md:max-w-lg overflow-y-auto px-4 rounded">
+      <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-calsans text-2xl">
-            Novo Atendimento
-          </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
+          <DialogTitle>Novo Atendimento</DialogTitle>
+          <DialogDescription>
             Preencha as informações para registrar um novo atendimento
           </DialogDescription>
         </DialogHeader>
 
-        <Separator orientation="horizontal" />
-
         <Form {...formConsultLawyer}>
           <form
             onSubmit={formConsultLawyer.handleSubmit(handleSearchLawyer)}
-            className="space-y-6 pt-2"
+            className="space-y-4"
           >
             <FormField
               control={formConsultLawyer.control}
@@ -269,11 +264,11 @@ export function NewService() {
                 <FormItem>
                   <FormLabel>Número de Inscrição OAB</FormLabel>
                   <FormControl>
-                    <Input {...field} className="rounded" />
+                    <Input {...field} />
                   </FormControl>
 
                   {errors.oab ? (
-                    <FormMessage className="text-red-500 text-xs">
+                    <FormMessage className="text-xs">
                       {errors.oab.message}
                     </FormMessage>
                   ) : (
@@ -286,7 +281,7 @@ export function NewService() {
             />
 
             {isNameResponse && (
-              <Alert className="rounded bg-emerald-600/50 p-2">
+              <Alert className="rounded-md border-success/40 bg-success/10 p-2 text-success">
                 <AlertTitle className="flex items-center justify-center gap-1">
                   <CheckCircle className="size-4" />
                   {formatFullName(isNameResponse)}
@@ -300,10 +295,7 @@ export function NewService() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
-                <Alert
-                  variant="destructive"
-                  className="rounded border border-amber-800 bg-amber-50 text-amber-800"
-                >
+                <Alert className="rounded-md border-warning/40 bg-warning/10 text-warning *:data-[slot=alert-description]:text-warning">
                   <InfoIcon />
                   <AlertDescription className="text-sm font-medium text-justify">
                     {isMessageErrorApi}
@@ -312,11 +304,7 @@ export function NewService() {
               </motion.div>
             )}
 
-            <Button
-              type="submit"
-              disabled={isConsulting}
-              className="bg-sky-700 hover:bg-sky-600 text-slate-200 cursor-pointer rounded w-full"
-            >
+            <Button type="submit" disabled={isConsulting} className="w-full">
               {isConsulting ? (
                 <>
                   <LoaderCircle className="animate-spin" />
@@ -324,7 +312,7 @@ export function NewService() {
                 </>
               ) : (
                 <>
-                  <UserSearch className="size-4" />
+                  <UserSearch />
                   Buscar Advogado(a)
                 </>
               )}
@@ -342,7 +330,7 @@ export function NewService() {
             <Form {...formNewService}>
               <form
                 onSubmit={formNewService.handleSubmit(handleCreateNewService)}
-                className="space-y-6 pt-2"
+                className="space-y-4"
               >
                 <FormField
                   control={formNewService.control}
@@ -354,19 +342,19 @@ export function NewService() {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
-                        <FormControl className="rounded">
-                          <SelectTrigger className="rounded w-full">
+                        <FormControl>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione a forma do atendimento" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="rounded">
+                        <SelectContent>
                           <SelectItem value="PERSONALLY">Presencial</SelectItem>
                           <SelectItem value="REMOTE">Remoto</SelectItem>
                         </SelectContent>
                       </Select>
 
                       {errors.assistance && (
-                        <FormMessage className="text-red-500 text-xs">
+                        <FormMessage className="text-xs">
                           {errors.assistance.message}
                         </FormMessage>
                       )}
@@ -402,7 +390,7 @@ export function NewService() {
                           </FormControl>
                         </DialogTrigger>
 
-                        <DialogContent className="w-full  py-2 px-0 rounded">
+                        <DialogContent className="w-full py-2 px-0">
                           <DialogTitle className="sr-only">
                             Selecionar Tipo de Serviço
                           </DialogTitle>
@@ -412,7 +400,7 @@ export function NewService() {
                               placeholder="Buscar tipo de serviço..."
                               className="max-h-64 overflow-y-auto"
                             />
-                            <CommandList className="rounded">
+                            <CommandList>
                               <CommandEmpty>
                                 Nenhum serviço encontrado.
                               </CommandEmpty>
@@ -462,7 +450,7 @@ export function NewService() {
                       <FormControl>
                         <Textarea
                           placeholder="Adicione informações relevantes sobre o atendimento"
-                          className="resize-none rounded min-h-24"
+                          className="min-h-20 resize-none"
                           {...field}
                         />
                       </FormControl>
@@ -471,12 +459,8 @@ export function NewService() {
                   )}
                 />
 
-                <DialogFooter className="flex items-center justify-end mt-8 flex-row gap-2 p-0">
-                  <Button
-                    type="submit"
-                    disabled={isCreating}
-                    className="bg-sky-700 hover:bg-sky-600 text-slate-200 cursor-pointer rounded"
-                  >
+                <DialogFooter className="pt-2">
+                  <Button type="submit" disabled={isCreating}>
                     {isCreating ? (
                       <>
                         <LoaderCircle className="animate-spin" />
@@ -484,7 +468,7 @@ export function NewService() {
                       </>
                     ) : (
                       <>
-                        <SquarePen className="size-4" />
+                        <SquarePen />
                         Criar Atendimento
                       </>
                     )}

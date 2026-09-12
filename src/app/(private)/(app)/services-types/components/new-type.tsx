@@ -3,6 +3,16 @@
 import { createServiceType } from '@/api/services-types/create-type'
 import { Button } from '@/components/ui/button'
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import {
   Form,
   FormControl,
   FormDescription,
@@ -12,21 +22,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { CirclePlus, ListPlus, LoaderCircle, UserRoundPlus } from 'lucide-react'
+import { ListPlus, LoaderCircle, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -39,8 +39,11 @@ const newServiceTypeFormSchema = z.object({
 type NewServiceTypeFormType = z.infer<typeof newServiceTypeFormSchema>
 
 export function NewServiceType() {
-  // FIXME: Guardará o estado do Sheet se ele estiver aberto ou fechado
-  const [sheetIsOpen, setSheetIsOpen] = useState(false)
+  // FIXME: Guardará o estado do Drawer se ele estiver aberto ou fechado
+  const [drawerIsOpen, setDrawerIsOpen] = useState(false)
+
+  // Drawer lateral no desktop e inferior no celular
+  const isMobile = useIsMobile()
 
   const form = useForm<NewServiceTypeFormType>({
     shouldUnregister: true, // Desregistrar o campo do formulário
@@ -66,8 +69,8 @@ export function NewServiceType() {
         name: data.name,
       })
 
-      // Fechar o Sheet quando o serviço for registrado
-      setSheetIsOpen(false)
+      // Fechar o Drawer quando o serviço for registrado
+      setDrawerIsOpen(false)
 
       toast.success('Novo serviço registrado com sucesso!', {
         description:
@@ -93,60 +96,62 @@ export function NewServiceType() {
   }
 
   return (
-    <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
-      <SheetTrigger asChild>
-        <Button className="bg-sky-700 flex items-center cursor-pointer rounded text-white hover:bg-sky-600">
-          <CirclePlus className="size-5" />
+    <Drawer
+      direction={isMobile ? 'bottom' : 'right'}
+      open={drawerIsOpen}
+      onOpenChange={setDrawerIsOpen}
+    >
+      <DrawerTrigger asChild>
+        <Button>
+          <Plus />
           Novo Serviço
         </Button>
-      </SheetTrigger>
+      </DrawerTrigger>
 
-      <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto px-4 w-full">
-        <SheetHeader className="mt-2">
-          <SheetTitle className="font-calsans text-2xl">
-            Novo Serviço
-          </SheetTitle>
-          <SheetDescription className="text-muted-foreground">
+      <DrawerContent>
+        <DrawerHeader className="border-b pr-12">
+          <DrawerTitle>Novo Serviço</DrawerTitle>
+          <DrawerDescription>
             Preencha as informações para registrar um novo serviço
-          </SheetDescription>
-        </SheetHeader>
-
-        <Separator orientation="horizontal" />
+          </DrawerDescription>
+        </DrawerHeader>
 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleCreateServiceType)}
-            className="space-y-6 pt-4"
+            className="flex min-h-0 flex-1 flex-col"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field, formState: { errors } }) => (
-                <FormItem>
-                  <FormLabel>Nome do Serviço</FormLabel>
-                  <FormControl>
-                    <Input {...field} className="rounded" />
-                  </FormControl>
+            <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field, formState: { errors } }) => (
+                  <FormItem>
+                    <FormLabel>Nome do Serviço</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
 
-                  {errors.name ? (
-                    <FormMessage className="text-red-500 text-xs">
-                      {errors.name.message}
-                    </FormMessage>
-                  ) : (
-                    <FormDescription className="text-muted-foreground text-xs">
-                      Por favor, insira o nome do novo serviço
-                    </FormDescription>
-                  )}
-                </FormItem>
-              )}
-            />
+                    {errors.name ? (
+                      <FormMessage>{errors.name.message}</FormMessage>
+                    ) : (
+                      <FormDescription>
+                        Por favor, insira o nome do novo serviço
+                      </FormDescription>
+                    )}
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <SheetFooter className="flex items-center mt-8 justify-end flex-row gap-2 p-0">
-              <Button
-                type="submit"
-                disabled={isCreating}
-                className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
-              >
+            <DrawerFooter className="flex-row justify-end border-t">
+              <DrawerClose asChild>
+                <Button type="button" variant="outline">
+                  Cancelar
+                </Button>
+              </DrawerClose>
+
+              <Button type="submit" disabled={isCreating}>
                 {isCreating ? (
                   <>
                     <LoaderCircle className="animate-spin" />
@@ -154,15 +159,15 @@ export function NewServiceType() {
                   </>
                 ) : (
                   <>
-                    <ListPlus className="size-5" />
+                    <ListPlus />
                     Criar Novo
                   </>
                 )}
               </Button>
-            </SheetFooter>
+            </DrawerFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   )
 }

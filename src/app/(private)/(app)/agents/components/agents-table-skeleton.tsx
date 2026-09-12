@@ -1,50 +1,30 @@
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TableCell, TableRow } from '@/components/ui/table'
-import { Edit3, Lock } from 'lucide-react'
 
 export function AgentsTableSkeleton() {
   return Array.from({ length: 10 }).map((_, index) => (
-    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-    <TableRow key={index} className="overflow-x-auto">
-      <TableCell />
-
-      <TableCell className="font-medium truncate max-w-xs border-r">
-        <Skeleton className="h-4 w-68 rounded" />
+    // biome-ignore lint/suspicious/noArrayIndexKey: linhas de placeholder sem identidade
+    <TableRow key={index}>
+      <TableCell>
+        <div className="flex items-center gap-2.5">
+          <Skeleton className="size-7 rounded-full" />
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-3.5 w-44" />
+            <Skeleton className="h-3 w-56" />
+          </div>
+        </div>
       </TableCell>
 
-      <TableCell className="font-medium truncate max-w-xs border-r">
-        <Skeleton className="h-4 w-50 rounded" />
+      <TableCell className="hidden md:table-cell">
+        <Skeleton className="h-5 w-24" />
       </TableCell>
 
-      <TableCell className="font-mono text-xs font-medium border-r text-center">
-        <Skeleton className="h-4 w-28 mx-auto rounded-full" />
+      <TableCell className="hidden sm:table-cell">
+        <Skeleton className="h-5 w-16" />
       </TableCell>
 
-      <TableCell className="font-mono tracking-tight text-xs truncate max-w-xs border-r text-center">
-        <Skeleton className="h-4 w-24 mx-auto rounded-full" />
-      </TableCell>
-
-      <TableCell className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          disabled
-          className="rounded flex items-center gap-2"
-        >
-          <Edit3 className="size-3.5" />
-          <Skeleton className="h-4 w-16 rounded" />
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled
-          className="rounded flex items-center gap-2"
-        >
-          <Lock className="size-3.5 text-rose-600" />
-          <Skeleton className="h-4 w-16 rounded" />
-        </Button>
+      <TableCell>
+        <Skeleton className="ml-auto size-7" />
       </TableCell>
     </TableRow>
   ))

@@ -2,15 +2,16 @@
 
 import { getAll } from '@/api/services-types/get-all'
 import { Pagination } from '@/components/app/pagination'
+import { TableEmptyState } from '@/components/app/table-empty-state'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
 import { useQuery } from '@tanstack/react-query'
+import { Layers } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { TypesTableFilters } from './types-table-filters'
@@ -44,28 +45,35 @@ export function ServicesTypesList() {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       {/* FIXME: Componente Types Services Table Filters */}
       <TypesTableFilters />
 
-      <div className="border rounded mt-8">
+      <div className="overflow-hidden rounded-lg border bg-card shadow-xs">
         <Table>
-          {results?.servicesTypes.length === 0 && (
-            <TableCaption className="pb-4 text-muted-foreground">
-              Não encontramos nenhum tipo de serviço cadastrado.
-            </TableCaption>
-          )}
-
           <TableHeader>
             <TableRow>
-              <TableHead className="w-18">Identificador</TableHead>
-              <TableHead className="w-18">Nome do Serviço</TableHead>
-              <TableHead className="w-18 text-center" />
+              <TableHead>Nome do Serviço</TableHead>
+              <TableHead className="hidden w-80 md:table-cell">
+                Identificador
+              </TableHead>
+              <TableHead className="w-24 text-right">
+                <span className="sr-only">Ações</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {isLoading && <TypesTableSkeleton />}
+
+            {results?.servicesTypes.length === 0 && (
+              <TableEmptyState
+                colSpan={3}
+                icon={Layers}
+                title="Não encontramos nenhum tipo de serviço cadastrado."
+                description="Ajuste os filtros ou cadastre um novo serviço."
+              />
+            )}
 
             {results?.servicesTypes.map(serviceType => {
               return (
@@ -77,16 +85,18 @@ export function ServicesTypesList() {
             })}
           </TableBody>
         </Table>
-      </div>
 
-      {/* FIXME: Componente de Paginação */}
-      <Pagination
-        onPageChange={handlePageChange}
-        pageIndex={pageIndex}
-        totalCount={results?.total ?? 0}
-        perPage={10}
-        finalText="serviço(s)"
-      />
-    </>
+        {/* FIXME: Componente de Paginação */}
+        <div className="border-t px-3 py-2">
+          <Pagination
+            onPageChange={handlePageChange}
+            pageIndex={pageIndex}
+            totalCount={results?.total ?? 0}
+            perPage={10}
+            finalText="serviço(s)"
+          />
+        </div>
+      </div>
+    </div>
   )
 }

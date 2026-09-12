@@ -27,25 +27,26 @@ export function Pagination({
   const pages = Math.ceil(totalCount / perPage) || 1
 
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-sm text-muted-foreground">
-        Total de {totalCount} {finalText}
+    <div className="flex flex-col items-center gap-2 text-xs sm:flex-row sm:justify-between">
+      <span className="text-muted-foreground">
+        Total de{' '}
+        <span className="font-medium text-foreground">{totalCount}</span>{' '}
+        {finalText}
       </span>
 
-      <div className="flex items-center gap-6 lg:gap-8">
-        <div className="text-sm font-medium">
+      <div className="flex items-center gap-3">
+        <span className="font-medium tabular-nums">
           Página {pageIndex} de {pages}
-        </div>
+        </span>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Button
             onClick={() => onPageChange(1)}
             disabled={pageIndex === 1}
             variant="outline"
-            size="icon"
-            className="cursor-pointer rounded"
+            size="icon-sm"
           >
-            <ChevronsLeft className="size-4" />
+            <ChevronsLeft />
             <span className="sr-only">Primeira página</span>
           </Button>
 
@@ -53,10 +54,9 @@ export function Pagination({
             onClick={() => onPageChange(pageIndex - 1)}
             disabled={pageIndex === 1}
             variant="outline"
-            size="icon"
-            className="cursor-pointer rounded"
+            size="icon-sm"
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft />
             <span className="sr-only">Página anterior</span>
           </Button>
 
@@ -64,10 +64,9 @@ export function Pagination({
             onClick={() => onPageChange(pageIndex + 1)}
             disabled={pageIndex === pages}
             variant="outline"
-            size="icon"
-            className="cursor-pointer rounded"
+            size="icon-sm"
           >
-            <ChevronRight className="size-4" />
+            <ChevronRight />
             <span className="sr-only">Próxima página</span>
           </Button>
 
@@ -75,10 +74,9 @@ export function Pagination({
             onClick={() => onPageChange(pages)}
             disabled={pageIndex === pages}
             variant="outline"
-            size="icon"
-            className="cursor-pointer rounded"
+            size="icon-sm"
           >
-            <ChevronsRight className="size-4" />
+            <ChevronsRight />
             <span className="sr-only">Última página</span>
           </Button>
         </div>

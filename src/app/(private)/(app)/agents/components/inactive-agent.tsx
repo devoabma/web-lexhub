@@ -51,7 +51,7 @@ export function InactiveAgent({ agents, onOpenChange }: InactiveAgentProps) {
   }
 
   return (
-    <DialogContent className="rounded-2xl">
+    <DialogContent className="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>Desativar Funcionário</DialogTitle>
         <DialogDescription>
@@ -61,26 +61,23 @@ export function InactiveAgent({ agents, onOpenChange }: InactiveAgentProps) {
 
       <DialogFooter>
         <DialogClose asChild>
-          <Button variant="ghost" className="rounded cursor-pointer">
-            Cancelar
-          </Button>
+          <Button variant="outline">Voltar</Button>
         </DialogClose>
         <Button
           variant="destructive"
-          className="rounded cursor-pointer"
           disabled={isDesactivating}
           onClick={handleInactiveAgent}
         >
           {!isDesactivating ? (
             <>
-              <Lock className="size-4" />
+              <Lock />
               Revogar Acesso
             </>
           ) : (
-            <div className="flex items-center gap-2">
-              <LoaderCircle className="size-4 animate-spin" />
+            <>
+              <LoaderCircle className="animate-spin" />
               Aplicando mudanças...
-            </div>
+            </>
           )}
         </Button>
       </DialogFooter>

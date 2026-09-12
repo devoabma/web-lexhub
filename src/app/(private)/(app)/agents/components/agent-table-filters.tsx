@@ -1,8 +1,8 @@
 'use client'
 
+import { FilterInput } from '@/components/app/filter-input'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -70,21 +70,15 @@ export function AgentTableFilters() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFilterAgent)}
-        className="flex items-center gap-2"
+        className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center"
       >
-        <span className="text-sm font-semibold">Filtros:</span>
-
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="sm:w-64 lg:w-80">
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Nome do Funcionário"
-                  className="h-8 w-80 rounded"
-                />
+                <FilterInput {...field} placeholder="Nome do Funcionário" />
               </FormControl>
             </FormItem>
           )}
@@ -94,15 +88,15 @@ export function AgentTableFilters() {
           control={form.control}
           name="role"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="sm:w-44">
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="h-8 w-40 rounded">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Cargo" />
                   </SelectTrigger>
                 </FormControl>
 
-                <SelectContent className="rounded">
+                <SelectContent>
                   <SelectItem value="ALL">Todos</SelectItem>
                   <SelectItem value="ADMIN">Administrador</SelectItem>
                   <SelectItem value="MEMBER">Membro</SelectItem>
@@ -112,25 +106,22 @@ export function AgentTableFilters() {
           )}
         />
 
-        <Button
-          type="submit"
-          size="sm"
-          className="cursor-pointer rounded bg-sky-700 hover:bg-sky-600 text-white"
-        >
-          <Search className="size-4" />
-          Filtrar resultados
-        </Button>
+        <div className="flex gap-2">
+          <Button type="submit" className="flex-1 sm:flex-none">
+            <Search />
+            Filtrar resultados
+          </Button>
 
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          className="cursor-pointer rounded"
-          onClick={handleClearFilters}
-        >
-          <X className="size-4" />
-          Remover filtros
-        </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="flex-1 text-muted-foreground sm:flex-none"
+            onClick={handleClearFilters}
+          >
+            <X />
+            Remover filtros
+          </Button>
+        </div>
       </form>
     </Form>
   )

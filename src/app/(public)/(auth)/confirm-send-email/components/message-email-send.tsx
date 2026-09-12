@@ -21,7 +21,7 @@ export function MessageEmailSend({ email }: ConfirmSendEmailProps) {
     <>
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
-          <CheckCircle className="h-12 w-12 text-green-500" />
+          <CheckCircle className="h-12 w-12 text-success" />
         </div>
         <CardTitle className="text-2xl font-bold">E-mail enviado</CardTitle>
         <CardDescription>
@@ -33,7 +33,7 @@ export function MessageEmailSend({ email }: ConfirmSendEmailProps) {
       <CardFooter className="flex items-center justify-center">
         <Button
           variant="link"
-          className="text-sm group  text-muted-foreground cursor-pointer"
+          className="text-sm group text-muted-foreground cursor-pointer"
           asChild
         >
           <Link href="/">

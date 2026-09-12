@@ -1,8 +1,8 @@
 'use client'
 
+import { FilterInput } from '@/components/app/filter-input'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Search, X } from 'lucide-react'
+import { Hash, Search, UserRound, X } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -94,21 +94,15 @@ export function ServiceTableFilters() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFilterServices)}
-        className="flex flex-wrap items-center gap-2"
+        className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center"
       >
-        <span className="text-sm font-semibold">Filtros:</span>
-
         <FormField
           control={form.control}
           name="oab"
           render={({ field }) => (
-            <FormItem className="w-full sm:w-auto">
+            <FormItem className="lg:w-32">
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Número OAB"
-                  className="h-8 w-full sm:w-36 text-sm rounded"
-                />
+                <FilterInput {...field} icon={Hash} placeholder="Número OAB" />
               </FormControl>
             </FormItem>
           )}
@@ -118,13 +112,9 @@ export function ServiceTableFilters() {
           control={form.control}
           name="lawyerName"
           render={({ field }) => (
-            <FormItem className="w-full sm:w-auto">
+            <FormItem className="lg:min-w-56 lg:flex-1">
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Nome do advogado(a)"
-                  className="h-8 w-full sm:w-[350px] text-sm rounded"
-                />
+                <FilterInput {...field} placeholder="Nome do advogado(a)" />
               </FormControl>
             </FormItem>
           )}
@@ -134,12 +124,12 @@ export function ServiceTableFilters() {
           control={form.control}
           name="agentName"
           render={({ field }) => (
-            <FormItem className="w-full sm:w-auto">
+            <FormItem className="lg:w-44">
               <FormControl>
-                <Input
+                <FilterInput
                   {...field}
+                  icon={UserRound}
                   placeholder="Funcionário(a)"
-                  className="h-8 w-full sm:w-[350px] text-sm rounded"
                 />
               </FormControl>
             </FormItem>
@@ -150,15 +140,15 @@ export function ServiceTableFilters() {
           control={form.control}
           name="status"
           render={({ field }) => (
-            <FormItem className="w-full sm:w-auto">
+            <FormItem className="lg:w-36">
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="h-8 w-full sm:w-36 rounded">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                 </FormControl>
 
-                <SelectContent className="rounded">
+                <SelectContent>
                   <SelectItem value="ALL">Todos</SelectItem>
                   <SelectItem value="OPEN">Em andamento</SelectItem>
                   <SelectItem value="COMPLETED">Concluído</SelectItem>
@@ -172,15 +162,15 @@ export function ServiceTableFilters() {
           control={form.control}
           name="assistance"
           render={({ field }) => (
-            <FormItem className="w-full sm:w-auto">
+            <FormItem className="lg:w-32">
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="h-8 w-full sm:w-36 rounded">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Atendimento" />
                   </SelectTrigger>
                 </FormControl>
 
-                <SelectContent className="rounded">
+                <SelectContent>
                   <SelectItem value="ALL">Todos</SelectItem>
                   <SelectItem value="PERSONALLY">Presencial</SelectItem>
                   <SelectItem value="REMOTE">Remoto</SelectItem>
@@ -190,24 +180,19 @@ export function ServiceTableFilters() {
           )}
         />
 
-        <div className="flex w-full sm:w-auto max-sm:flex-col gap-2">
-          <Button
-            type="submit"
-            size="sm"
-            className="w-full sm:w-auto cursor-pointer rounded bg-sky-700 hover:bg-sky-600 text-white flex items-center gap-2"
-          >
-            <Search className="size-4" />
+        <div className="flex gap-2 sm:col-span-2">
+          <Button type="submit" className="flex-1 sm:flex-none">
+            <Search />
             Filtrar resultados
           </Button>
 
           <Button
             type="button"
-            size="sm"
-            variant="outline"
-            className="w-full sm:w-auto cursor-pointer rounded flex items-center gap-2"
+            variant="ghost"
+            className="flex-1 text-muted-foreground sm:flex-none"
             onClick={handleClearFilters}
           >
-            <X className="size-4" />
+            <X />
             Remover filtros
           </Button>
         </div>

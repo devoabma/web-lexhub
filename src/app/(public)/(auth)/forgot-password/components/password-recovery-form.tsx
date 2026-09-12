@@ -113,7 +113,7 @@ export function PasswordRecoveryForm() {
                     </FormControl>
 
                     {errors.email && (
-                      <FormMessage className="text-red-500 text-xs">
+                      <FormMessage className="text-xs">
                         {errors.email.message}
                       </FormMessage>
                     )}
@@ -125,7 +125,7 @@ export function PasswordRecoveryForm() {
             <Button
               type="submit"
               disabled={isRecovering}
-              className="w-full select-none group bg-sky-700 hover:bg-sky-600 hover:cursor-pointer rounded text-white font-semibold transition-colors"
+              className="w-full select-none group hover:cursor-pointer rounded font-semibold transition-colors"
             >
               {isRecovering ? (
                 <>

@@ -5,6 +5,7 @@ import { type InputHTMLAttributes, forwardRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 type PasswordInputProps = InputHTMLAttributes<HTMLInputElement>
 
@@ -21,21 +22,19 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       <div className="relative">
         <Input
           type={showPassword ? 'text' : 'password'}
-          className={` ${className}`}
+          className={cn('pr-10', className)}
           ref={ref} // Aqui o ref é passado corretamente
           {...props}
         />
         <Button
           type="button"
           variant="ghost"
-          className="absolute right-2 top-0 h-full px-3 py-2 hover:bg-transparent"
+          size="icon-sm"
+          className="-translate-y-1/2 absolute top-1/2 right-0.5 text-muted-foreground hover:bg-transparent hover:text-foreground"
           onClick={togglePasswordVisibility}
+          aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
         >
-          {showPassword ? (
-            <EyeOff className="h-4 w-4 text-gray-500" />
-          ) : (
-            <Eye className="h-4 w-4 text-gray-500" />
-          )}
+          {showPassword ? <EyeOff /> : <Eye />}
         </Button>
       </div>
     )

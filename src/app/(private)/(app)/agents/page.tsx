@@ -1,4 +1,4 @@
-import { Separator } from '@/components/ui/separator'
+import { PageHeader } from '@/components/app/page-header'
 import type { Metadata } from 'next'
 import { AgentsList } from './components/agents-list'
 import { NewAgent } from './components/new-agent'
@@ -9,22 +9,20 @@ export const metadata: Metadata = {
 
 export default function AgentsPage() {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-calsans font-bold tracking-tight">
-          Gestão de Funcionários
-        </h1>
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        title="Gestão de Funcionários"
+        description="Cadastre funcionários e controle quem tem acesso ao sistema."
+        actions={
+          <>
+            {/* FIXME: Componente de Novo Funcionario */}
+            <NewAgent />
+          </>
+        }
+      />
 
-        {/* FIXME: Componente de Novo Funcionario */}
-        <NewAgent />
-      </div>
-
-      <Separator orientation="horizontal" />
-
-      <div className="space-y-2.5 mt-4">
-        {/* FIXME: Componente que lista os funcionários */}
-        <AgentsList />
-      </div>
+      {/* FIXME: Componente que lista os funcionários */}
+      <AgentsList />
     </div>
   )
 }

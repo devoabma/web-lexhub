@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { LoaderCircle, LogIn } from 'lucide-react'
 import Link from 'next/link'
@@ -26,6 +26,7 @@ type LoginFormType = z.infer<typeof LoginFormSchema>
 
 export function FormAuth() {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const {
     register,
@@ -48,6 +49,9 @@ export function FormAuth() {
         password: data.password,
       })
 
+      // Descarta dados de uma sessão anterior na mesma aba (perfil, listagens)
+      queryClient.clear()
+
       toast.success('Acesso concedido.', {
         description: 'Bem-vindo(a) à OAB Atende.',
       })
@@ -55,6 +59,10 @@ export function FormAuth() {
       // reset()
 
       router.replace('/dashboard')
+
+      // Depois da navegação (uma navegação descarta um refresh pendente): limpa
+      // o cache do roteador do Next, que pode ter o menu de outro usuário
+      router.refresh()
     } catch (err) {
       // FIXME: Tratar erros vindo da API
       reset()
@@ -76,7 +84,7 @@ export function FormAuth() {
   }
 
   return (
-    <Card className="border-0 w-full max-md:w-[27rem] lg:w-[28rem] shadow-xl backdrop-blur-sm">
+    <Card className="w-full shadow-lg">
       <CardContent>
         <form className="space-y-6" onSubmit={handleSubmit(handleLogin)}>
           <div className="space-y-4">
@@ -85,7 +93,7 @@ export function FormAuth() {
               <Input
                 id="email"
                 data-error={Boolean(errors.email)}
-                className="data-[error=true]:border-red-600 rounded data-[error=true]:focus-visible:ring-0"
+                className="data-[error=true]:border-destructive data-[error=true]:focus-visible:ring-destructive/30"
                 type="email"
                 {...register('email')}
               />
@@ -109,7 +117,7 @@ export function FormAuth() {
               <PasswordInput
                 id="password"
                 data-error={Boolean(errors.password)}
-                className="data-[error=true]:border-red-600 rounded data-[error=true]:focus-visible:ring-0"
+                className="data-[error=true]:border-destructive data-[error=true]:focus-visible:ring-destructive/30"
                 {...register('password')}
               />
               {errors.password && (
@@ -123,7 +131,8 @@ export function FormAuth() {
             disabled={
               isSubmitting || Boolean(errors.email) || Boolean(errors.password)
             }
-            className="w-full select-none bg-sky-700 hover:bg-sky-600 hover:cursor-pointer rounded text-white font-semibold transition-colors"
+            size="lg"
+            className="w-full select-none font-semibold"
           >
             {isSubmitting ? (
               <>

@@ -2,15 +2,16 @@
 
 import { getAll } from '@/api/agents/get-all'
 import { Pagination } from '@/components/app/pagination'
+import { TableEmptyState } from '@/components/app/table-empty-state'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
 import { useQuery } from '@tanstack/react-query'
+import { Users } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { AgentTableFilters } from './agent-table-filters'
@@ -46,26 +47,22 @@ export function AgentsList() {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       {/* FIXME: Componente Agent Table Filters */}
       <AgentTableFilters />
 
-      <div className="border rounded mt-8">
+      <div className="overflow-hidden rounded-lg border bg-card shadow-xs">
         <Table>
-          {results?.agents.length === 0 && (
-            <TableCaption className="pb-4 text-muted-foreground">
-              Não encontramos nenhum funcionário cadastrado.
-            </TableCaption>
-          )}
-
           <TableHeader>
             <TableRow>
-              <TableHead className="w-1" />
-              <TableHead>Nome do Funcionário</TableHead>
-              <TableHead>E-mail cadastrado</TableHead>
-              <TableHead className="w-52 text-center">Cargo</TableHead>
-              <TableHead className="w-56 text-center">Situação</TableHead>
-              <TableHead className="w-32" />
+              <TableHead>Funcionário(a)</TableHead>
+              <TableHead className="hidden w-40 md:table-cell">Cargo</TableHead>
+              <TableHead className="hidden w-56 sm:table-cell">
+                Situação
+              </TableHead>
+              <TableHead className="w-14 text-right">
+                <span className="sr-only">Ações</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
 
@@ -73,21 +70,32 @@ export function AgentsList() {
           <TableBody>
             {isLoading && <AgentsTableSkeleton />}
 
+            {results?.agents.length === 0 && (
+              <TableEmptyState
+                colSpan={4}
+                icon={Users}
+                title="Não encontramos nenhum funcionário cadastrado."
+                description="Ajuste os filtros ou cadastre um novo funcionário."
+              />
+            )}
+
             {results?.agents.map(agent => {
               return <AgentTableRow key={agent.id} agents={agent} />
             })}
           </TableBody>
         </Table>
-      </div>
 
-      {/* FIXME: Componente de Paginação */}
-      <Pagination
-        onPageChange={handlePageChange}
-        pageIndex={pageIndex}
-        totalCount={results?.total ?? 0}
-        perPage={10}
-        finalText="funcionário(s)"
-      />
-    </>
+        {/* FIXME: Componente de Paginação */}
+        <div className="border-t px-3 py-2">
+          <Pagination
+            onPageChange={handlePageChange}
+            pageIndex={pageIndex}
+            totalCount={results?.total ?? 0}
+            perPage={10}
+            finalText="funcionário(s)"
+          />
+        </div>
+      </div>
+    </div>
   )
 }

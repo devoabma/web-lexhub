@@ -8,6 +8,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog'
 import {
   Form,
@@ -26,9 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { DialogTitle } from '@radix-ui/react-dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { LoaderCircle, Save } from 'lucide-react'
@@ -113,21 +112,17 @@ export function UpdateAgentDialog({ agents, onOpenChange }: UpdateAgentProps) {
   }
 
   return (
-    <DialogContent className="w-[90%] rounded">
+    <DialogContent className="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle className="font-calsans text-2xl">
-          Editar Informações do Funcionário
-        </DialogTitle>
+        <DialogTitle>Editar Informações do Funcionário</DialogTitle>
         <DialogDescription>
           Altere os dados do funcionário conforme necessário.
         </DialogDescription>
       </DialogHeader>
 
-      <Separator orientation="horizontal" />
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleUpdateAgent)}>
-          <div className="space-y-4 py-4">
+          <div className="py-2">
             <div className="flex flex-col gap-4">
               <FormField
                 control={form.control}
@@ -136,15 +131,13 @@ export function UpdateAgentDialog({ agents, onOpenChange }: UpdateAgentProps) {
                   <FormItem>
                     <FormLabel>Nome</FormLabel>
                     <FormControl>
-                      <Input {...field} className="rounded" />
+                      <Input {...field} />
                     </FormControl>
 
                     {errors.name ? (
-                      <FormMessage className="text-red-500 text-xs">
-                        {errors.name.message}
-                      </FormMessage>
+                      <FormMessage>{errors.name.message}</FormMessage>
                     ) : (
-                      <FormDescription className="text-muted-foreground text-xs">
+                      <FormDescription>
                         Por favor, insira o nome completo do funcionário
                       </FormDescription>
                     )}
@@ -159,15 +152,13 @@ export function UpdateAgentDialog({ agents, onOpenChange }: UpdateAgentProps) {
                   <FormItem>
                     <FormLabel>E-mail cadastrado</FormLabel>
                     <FormControl>
-                      <Input {...field} className="rounded" />
+                      <Input {...field} />
                     </FormControl>
 
                     {errors.email ? (
-                      <FormMessage className="text-red-500 text-xs">
-                        {errors.email.message}
-                      </FormMessage>
+                      <FormMessage>{errors.email.message}</FormMessage>
                     ) : (
-                      <FormDescription className="text-muted-foreground text-xs">
+                      <FormDescription>
                         Insira o novo endereço de e-mail do funcionário
                       </FormDescription>
                     )}
@@ -183,15 +174,12 @@ export function UpdateAgentDialog({ agents, onOpenChange }: UpdateAgentProps) {
                     <FormLabel>Cargo Atual</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="rounded">
+                        <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
 
-                      <SelectContent
-                        defaultValue={field.value}
-                        className="rounded"
-                      >
+                      <SelectContent defaultValue={field.value}>
                         <SelectItem value="ADMIN">Administrador</SelectItem>
                         <SelectItem value="MEMBER">Membro</SelectItem>
                       </SelectContent>
@@ -205,20 +193,12 @@ export function UpdateAgentDialog({ agents, onOpenChange }: UpdateAgentProps) {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button
-                variant="ghost"
-                type="button"
-                className="rounded cursor-pointer"
-              >
+              <Button variant="outline" type="button">
                 Cancelar
               </Button>
             </DialogClose>
 
-            <Button
-              type="submit"
-              disabled={isLoadindUpdate}
-              className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
-            >
+            <Button type="submit" disabled={isLoadindUpdate}>
               {isLoadindUpdate ? (
                 <>
                   <LoaderCircle className="animate-spin" />
@@ -226,7 +206,7 @@ export function UpdateAgentDialog({ agents, onOpenChange }: UpdateAgentProps) {
                 </>
               ) : (
                 <>
-                  <Save className="size-4" />
+                  <Save />
                   Salvar alterações
                 </>
               )}

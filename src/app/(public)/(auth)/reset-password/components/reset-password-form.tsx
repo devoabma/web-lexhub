@@ -137,7 +137,7 @@ export function ResetPasswordForm({ code }: ResetPasswordFormProps) {
                   </FormControl>
 
                   {errors.code && (
-                    <FormMessage className="text-red-500 text-xs">
+                    <FormMessage className="text-xs">
                       {errors.code.message}
                     </FormMessage>
                   )}
@@ -156,7 +156,7 @@ export function ResetPasswordForm({ code }: ResetPasswordFormProps) {
                   </FormControl>
 
                   {errors.password && (
-                    <FormMessage className="text-red-500 text-xs">
+                    <FormMessage className="text-xs">
                       {errors.password.message}
                     </FormMessage>
                   )}
@@ -174,9 +174,9 @@ export function ResetPasswordForm({ code }: ResetPasswordFormProps) {
                     <PasswordInput {...field} className="rounded" />
                   </FormControl>
 
-                  {errors.code && (
-                    <FormMessage className="text-red-500 text-xs">
-                      {errors.code.message}
+                  {errors.confirmPassword && (
+                    <FormMessage className="text-xs">
+                      {errors.confirmPassword.message}
                     </FormMessage>
                   )}
                 </FormItem>
@@ -186,7 +186,7 @@ export function ResetPasswordForm({ code }: ResetPasswordFormProps) {
             <Button
               type="submit"
               disabled={isResetting}
-              className="bg-sky-700 w-full group hover:bg-sky-600 text-white cursor-pointer rounded"
+              className="w-full group cursor-pointer rounded"
             >
               {isResetting ? (
                 <>

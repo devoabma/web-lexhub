@@ -27,14 +27,11 @@ export function NotFound404() {
       </motion.div>
       <h1 className="mb-2 text-4xl font-bold">404</h1>
       <h2 className="mb-4 text-2xl font-semibold">Página Não Encontrada</h2>
-      <p className="mx-auto mb-8 max-w-md text-gray-600">
+      <p className="mx-auto mb-8 max-w-md text-muted-foreground">
         Ops! Parece que você se perdeu. Esta página não existe no nosso sistema.
       </p>
       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <Button
-          asChild
-          className="bg-sky-600 rounded text-white hover:bg-sky-700"
-        >
+        <Button asChild className="rounded">
           <Link href="/">Voltar para a Página Inicial</Link>
         </Button>
       </motion.div>

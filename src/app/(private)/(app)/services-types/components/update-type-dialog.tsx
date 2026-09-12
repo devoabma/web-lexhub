@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
@@ -97,21 +96,17 @@ export function UpdateServiceTypeDialog({
         queryClient.invalidateQueries({ queryKey: ['services-types'] }),
     })
   return (
-    <DialogContent className="w-[90%] rounded">
+    <DialogContent className="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle className="font-calsans text-2xl">
-          Editar Tipo de Serviço
-        </DialogTitle>
+        <DialogTitle>Editar Tipo de Serviço</DialogTitle>
         <DialogDescription>
           Altere os dados do tipo de serviço conforme necessário.
         </DialogDescription>
       </DialogHeader>
 
-      <Separator orientation="horizontal" />
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleUpdateServiceType)}>
-          <div className="space-y-4 py-4">
+          <div className="py-2">
             <FormField
               control={form.control}
               name="name"
@@ -119,15 +114,13 @@ export function UpdateServiceTypeDialog({
                 <FormItem>
                   <FormLabel>Nome</FormLabel>
                   <FormControl>
-                    <Input {...field} className="rounded" />
+                    <Input {...field} />
                   </FormControl>
 
                   {errors.name ? (
-                    <FormMessage className="text-red-500 text-xs">
-                      {errors.name.message}
-                    </FormMessage>
+                    <FormMessage>{errors.name.message}</FormMessage>
                   ) : (
-                    <FormDescription className="text-muted-foreground text-xs">
+                    <FormDescription>
                       Por favor, insira o nome completo do tipo de serviço.
                     </FormDescription>
                   )}
@@ -136,22 +129,14 @@ export function UpdateServiceTypeDialog({
             />
           </div>
 
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-2">
             <DialogClose asChild>
-              <Button
-                variant="ghost"
-                type="button"
-                className="rounded cursor-pointer"
-              >
+              <Button variant="outline" type="button">
                 Cancelar
               </Button>
             </DialogClose>
 
-            <Button
-              type="submit"
-              disabled={isLoadingUpdating}
-              className="bg-sky-700 hover:bg-sky-600 text-white cursor-pointer rounded"
-            >
+            <Button type="submit" disabled={isLoadingUpdating}>
               {isLoadingUpdating ? (
                 <>
                   <LoaderCircle className="animate-spin" />
@@ -159,7 +144,7 @@ export function UpdateServiceTypeDialog({
                 </>
               ) : (
                 <>
-                  <Save className="size-4" />
+                  <Save />
                   Salvar alterações
                 </>
               )}

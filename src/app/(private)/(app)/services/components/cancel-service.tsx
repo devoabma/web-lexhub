@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { LoaderCircle, XCircle } from 'lucide-react'
+import { CircleX, LoaderCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface CancelServiceProps {
@@ -53,31 +53,35 @@ export function CancelService({ services, onOpenChange }: CancelServiceProps) {
   }
 
   return (
-    <DialogContent className="rounded-2xl">
+    <DialogContent className="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>Cancelar Atendimento</DialogTitle>
         <DialogDescription>
-          O atendimento será cancelado. Deseja continuar?
+          O atendimento será cancelado. Essa ação é irreversível. Deseja
+          continuar?
         </DialogDescription>
       </DialogHeader>
 
       <DialogFooter>
+        <DialogClose asChild>
+          <Button variant="outline">Voltar</Button>
+        </DialogClose>
+
         <Button
           variant="destructive"
-          className="rounded cursor-pointer text-white"
           disabled={isCancelling}
           onClick={handleCancelService}
         >
           {!isCancelling ? (
             <>
-              <XCircle className="size-4" />
+              <CircleX />
               Cancelar
             </>
           ) : (
-            <div className="flex items-center gap-2">
-              <LoaderCircle className="size-4 animate-spin" />
+            <>
+              <LoaderCircle className="animate-spin" />
               Cancelando...
-            </div>
+            </>
           )}
         </Button>
       </DialogFooter>

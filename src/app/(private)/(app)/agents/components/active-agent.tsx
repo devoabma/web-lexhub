@@ -50,7 +50,7 @@ export function ActiveAgent({ agents, onOpenChange }: InactiveAgentProps) {
   }
 
   return (
-    <DialogContent className="rounded-2xl">
+    <DialogContent className="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>Ativar Funcionário</DialogTitle>
         <DialogDescription>
@@ -61,25 +61,19 @@ export function ActiveAgent({ agents, onOpenChange }: InactiveAgentProps) {
 
       <DialogFooter>
         <DialogClose asChild>
-          <Button variant="ghost" className="rounded cursor-pointer">
-            Cancelar
-          </Button>
+          <Button variant="outline">Voltar</Button>
         </DialogClose>
-        <Button
-          className="rounded cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white"
-          disabled={isActivating}
-          onClick={handleActiveAgent}
-        >
+        <Button disabled={isActivating} onClick={handleActiveAgent}>
           {!isActivating ? (
             <>
-              <LockOpen className="size-4" />
+              <LockOpen />
               Permitir Acesso
             </>
           ) : (
-            <div className="flex items-center gap-2">
-              <LoaderCircle className="size-4 animate-spin" />
+            <>
+              <LoaderCircle className="animate-spin" />
               Aplicando mudanças...
-            </div>
+            </>
           )}
         </Button>
       </DialogFooter>
